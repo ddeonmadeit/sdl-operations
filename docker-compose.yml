@@ -1,0 +1,29 @@
+# Run the whole thing on one server:  docker compose up -d
+# Then open http://<server>:3000 and sign in with ADMIN_EMAIL / ADMIN_PASSWORD.
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: sdl
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-change-this-db-password}
+      POSTGRES_DB: sdl
+    volumes:
+      - db:/var/lib/postgresql/data
+
+  app:
+    build: .
+    restart: unless-stopped
+    depends_on: [db]
+    ports:
+      - "3000:3000"
+    env_file: .env
+    environment:
+      DATABASE_URL: postgres://sdl:${DB_PASSWORD:-change-this-db-password}@db:5432/sdl
+      UPLOAD_DIR: /data/uploads
+    volumes:
+      - uploads:/data
+
+volumes:
+  db:
+  uploads:

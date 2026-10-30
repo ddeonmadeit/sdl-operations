@@ -1,0 +1,69 @@
+import "server-only";
+import { mkdir, readFile, unlink, writeFile } from "node:fs/promises";
+import path from "node:path";
+import { AwsClient } from "aws4fetch";
+import { randomToken } from "./auth";
+
+/**
+ * File storage. Uses an S3-compatible bucket when S3_BUCKET is set,
+ * otherwise the local ./uploads folder (or UPLOAD_DIR).
+ */
+const s3 = process.env.S3_BUCKET
+  ? {
+      client: new AwsClient({
+        accessKeyId: process.env.S3_ACCESS_KEY_ID!,
+        secretAccessKey: process.env.S3_SECRET_ACCESS_KEY!,
+        region: process.env.S3_REGION || "auto",
+        service: "s3",
+      }),
+      base: `${(process.env.S3_ENDPOINT || "").replace(/\/$/, "")}/${process.env.S3_BUCKET}`,
+    }
+  : null;
+
+const localDir = path.resolve(process.env.UPLOAD_DIR || "uploads");
+
+export function newStorageKey(filename: string) {
+  const ext = path.extname(filename).toLowerCase().replace(/[^.a-z0-9]/g, "").slice(0, 8);
+  const d = new Date();
+  return `${d.getUTCFullYear()}/${String(d.getUTCMonth() + 1).padStart(2, "0")}/${randomToken(12)}${ext}`;
+}
+
+export async function putFile(key: string, data: Buffer, contentType: string) {
+  if (s3) {
+    const res = await s3.client.fetch(`${s3.base}/${key}`, {
+      method: "PUT",
+      body: new Uint8Array(data),
+      headers: { "content-type": contentType },
+    });
+    if (!res.ok) throw new Error(`Upload failed (${res.status})`);
+    return;
+  }
+  const full = path.join(localDir, key);
+  await mkdir(path.dirname(full), { recursive: true });
+  await writeFile(full, data);
+}
+
+export async function getFile(key: string): Promise<Buffer | null> {
+  if (s3) {
+    const res = await s3.client.fetch(`${s3.base}/${key}`);
+    if (!res.ok) return null;
+    return Buffer.from(await res.arrayBuffer());
+  }
+  try {
+    const full = path.join(localDir, key);
+    if (!full.startsWith(localDir)) return null;
+    return await readFile(full);
+  } catch {
+    return null;
+  }
+}
+
+export async function deleteFile(key: string) {
+  if (s3) {
+    await s3.client.fetch(`${s3.base}/${key}`, { method: "DELETE" });
+    return;
+  }
+  try {
+    await unlink(path.join(localDir, key));
+  } catch {}
+}
