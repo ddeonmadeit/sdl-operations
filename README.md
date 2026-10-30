@@ -2,6 +2,12 @@
 
 Office dashboard/CRM and on-site app for **SDL Creations**. Both install on a phone like a normal app.
 
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/ddeonmadeit/sdl-operations)
+
+**Test it online (free):** click the button above, sign in to Render with GitHub, enter an admin email and password (8+ characters), and click **Deploy Blueprint**. After a few minutes you get a link like `https://sdl-operations.onrender.com`. It **redeploys automatically every time this branch changes**.
+- Sign in with your admin email and password. Demo logins `office@sdl.test` (office) and `sam@sdl.test` (supervisor) use the same password.
+- Free plan limits: the site sleeps after 15 minutes idle (the first visit takes about a minute to wake), and the free database expires after 30 days. Upgrade the database to keep your data.
+
 | App | URL | Who | Installs as |
 | --- | --- | --- | --- |
 | **Office** | `/office` | Admin and office staff | "SDL Office" |
@@ -78,7 +84,7 @@ Put it behind HTTPS (e.g. Caddy or Cloudflare). Phones only install apps from HT
 **Vercel**: works, but its disk isn't permanent, so set the `S3_*` variables for photos and plans and use a hosted Postgres (Neon or Supabase).
 
 ### File storage
-Uploads go to `./uploads` (or `UPLOAD_DIR`) by default. For cloud storage, set `S3_ENDPOINT`, `S3_BUCKET`, `S3_REGION`, `S3_ACCESS_KEY_ID` and `S3_SECRET_ACCESS_KEY`. This works with Cloudflare R2, AWS S3, Backblaze B2 and Supabase Storage.
+Uploads go to `./uploads` (or `UPLOAD_DIR`) by default. On hosts with no permanent disk (like Render's free plan), set `FILE_STORAGE=database` to keep them in Postgres. For cloud storage, set `S3_ENDPOINT`, `S3_BUCKET`, `S3_REGION`, `S3_ACCESS_KEY_ID` and `S3_SECRET_ACCESS_KEY`. This works with Cloudflare R2, AWS S3, Backblaze B2 and Supabase Storage.
 
 ### Email (optional)
 Without email set up, every "Send" button opens your own email app with the message filled in, or you can copy the link. To send directly from the app, set `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS` and `EMAIL_FROM` (Microsoft 365, Google Workspace or any SMTP service).

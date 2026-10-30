@@ -2,12 +2,17 @@ import "server-only";
 import { mkdir, readFile, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { AwsClient } from "aws4fetch";
+import { eq } from "drizzle-orm";
+import { db } from "@/db";
+import { blobs } from "@/db/schema";
 import { randomToken } from "./auth";
 
 /**
  * File storage. Uses an S3-compatible bucket when S3_BUCKET is set,
+ * the database when FILE_STORAGE=database (hosts without a persistent disk),
  * otherwise the local ./uploads folder (or UPLOAD_DIR).
  */
+const inDb = !process.env.S3_BUCKET && process.env.FILE_STORAGE === "database";
 const s3 = process.env.S3_BUCKET
   ? {
       client: new AwsClient({
@@ -38,6 +43,10 @@ export async function putFile(key: string, data: Buffer, contentType: string) {
     if (!res.ok) throw new Error(`Upload failed (${res.status})`);
     return;
   }
+  if (inDb) {
+    await db.insert(blobs).values({ key, data });
+    return;
+  }
   const full = path.join(localDir, key);
   await mkdir(path.dirname(full), { recursive: true });
   await writeFile(full, data);
@@ -48,6 +57,10 @@ export async function getFile(key: string): Promise<Buffer | null> {
     const res = await s3.client.fetch(`${s3.base}/${key}`);
     if (!res.ok) return null;
     return Buffer.from(await res.arrayBuffer());
+  }
+  if (inDb) {
+    const [row] = await db.select().from(blobs).where(eq(blobs.key, key));
+    return row?.data ?? null;
   }
   try {
     const full = path.join(localDir, key);
@@ -61,6 +74,10 @@ export async function getFile(key: string): Promise<Buffer | null> {
 export async function deleteFile(key: string) {
   if (s3) {
     await s3.client.fetch(`${s3.base}/${key}`, { method: "DELETE" });
+    return;
+  }
+  if (inDb) {
+    await db.delete(blobs).where(eq(blobs.key, key));
     return;
   }
   try {

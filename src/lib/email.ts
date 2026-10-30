@@ -4,7 +4,7 @@ import { getSetting } from "./settings";
 
 export const emailEnabled = () => Boolean(process.env.SMTP_HOST);
 
-export const appUrl = () => (process.env.APP_URL || "http://localhost:3000").replace(/\/$/, "");
+export const appUrl = () => (process.env.APP_URL || process.env.RENDER_EXTERNAL_URL || "http://localhost:3000").replace(/\/$/, "");
 
 /** Sends an email if SMTP is configured. Returns false when email is not set up. */
 export async function sendEmail(opts: { to: string; subject: string; text: string; replyTo?: string }) {

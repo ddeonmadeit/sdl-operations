@@ -1,0 +1,34 @@
+# Render Blueprint – one-click test deployment that redeploys on every push to GitHub.
+# Deploy: https://render.com/deploy?repo=https://github.com/ddeonmadeit/sdl-operations
+services:
+  - type: web
+    name: sdl-operations
+    runtime: node
+    plan: free
+    buildCommand: npm ci --include=dev && npm run build
+    # Migrate, create the admin login, load demo jobs (only into an empty database), then start.
+    startCommand: node scripts/migrate.mjs && npx tsx scripts/seed.ts --demo && npx next start
+    healthCheckPath: /login
+    autoDeployTrigger: commit
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: sdl-db
+          property: connectionString
+      - key: NODE_VERSION
+        value: "22"
+      - key: APP_TIMEZONE
+        value: Australia/Sydney
+      # Free instances have no persistent disk – keep photos and plans in the database.
+      - key: FILE_STORAGE
+        value: database
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+
+databases:
+  - name: sdl-db
+    plan: free
+    databaseName: sdl
+    user: sdl

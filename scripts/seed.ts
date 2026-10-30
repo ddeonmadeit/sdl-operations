@@ -52,7 +52,9 @@ async function demo() {
     console.log("Jobs already exist – skipping demo data.");
     return;
   }
-  const pw = await bcrypt.hash("sdl12345", 10);
+  // Demo logins share DEMO_PASSWORD (or the admin password on a hosted test site) so they aren't guessable.
+  const demoPassword = process.env.DEMO_PASSWORD || process.env.ADMIN_PASSWORD || "sdl12345";
+  const pw = await bcrypt.hash(demoPassword, 10);
   const [office, sup1, sup2] = await db
     .insert(s.users)
     .values([
@@ -332,7 +334,7 @@ async function demo() {
   ];
   await db.insert(s.activity).values(acts.map(([jobId, userId, message, h]) => ({ jobId, userId, kind: "demo", message, createdAt: hoursAgo(h) })));
 
-  console.log("Demo data loaded. Demo logins (password sdl12345): office@sdl.test, sam@sdl.test, jordan@sdl.test");
+  console.log(`Demo data loaded. Demo logins: office@sdl.test, sam@sdl.test, jordan@sdl.test (password: ${process.env.DEMO_PASSWORD || process.env.ADMIN_PASSWORD ? "same as ADMIN_PASSWORD / DEMO_PASSWORD" : "sdl12345"})`);
 }
 
 (async () => {

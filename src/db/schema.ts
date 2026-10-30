@@ -1,6 +1,7 @@
 import { relations } from "drizzle-orm";
 import {
   boolean,
+  customType,
   date,
   doublePrecision,
   index,
@@ -385,6 +386,13 @@ export const activity = pgTable(
 export const settings = pgTable("settings", {
   key: text("key").primaryKey(),
   value: jsonb("value").notNull(),
+});
+
+/** File contents, used when FILE_STORAGE=database (hosts without a persistent disk). */
+const bytea = customType<{ data: Buffer; driverData: Buffer }>({ dataType: () => "bytea" });
+export const blobs = pgTable("blobs", {
+  key: text("key").primaryKey(),
+  data: bytea("data").notNull(),
 });
 
 /* ───────────── Relations ───────────── */
