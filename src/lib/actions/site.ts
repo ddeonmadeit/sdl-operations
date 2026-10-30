@@ -158,7 +158,7 @@ export async function addEntry(jobId: number, fd: FormData): Promise<ActionState
 }
 
 export async function resolveEntry(id: number): Promise<ActionState> {
-  const user = await requireUser();
+  const user = await requireOffice();
   const [e] = await db.select().from(entries).where(eq(entries.id, id));
   if (!e) return { error: "Not found." };
   await db
