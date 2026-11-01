@@ -33,7 +33,7 @@ export function JobTabs({ jobId, counts }: { jobId: number; counts: Record<strin
           >
             {t.label}
             {t.count ? (
-              <span className="rounded-full bg-clay-soft px-1.5 text-[0.7rem] font-semibold text-clay-ink">{t.count}</span>
+              <span className="rounded-full bg-olive px-1.5 text-[0.7rem] font-semibold text-cream">{t.count}</span>
             ) : null}
           </Link>
         );

@@ -7,7 +7,7 @@ export const JOB_STATUSES = {
   enquiry: { label: "Enquiry", tone: "neutral" },
   site_visit: { label: "Site visit", tone: "info" },
   quoting: { label: "Quoting", tone: "info" },
-  quoted: { label: "Quote sent", tone: "warn" },
+  quoted: { label: "Quote sent", tone: "info" },
   won: { label: "Won – to start", tone: "good" },
   in_progress: { label: "In progress", tone: "strong" },
   completed: { label: "Completed", tone: "good" },
@@ -36,14 +36,14 @@ export type StageStatus = keyof typeof STAGE_STATUSES;
 
 export const QUOTE_STATUSES = {
   draft: { label: "Draft", tone: "neutral" },
-  sent: { label: "Sent", tone: "warn" },
+  sent: { label: "Sent", tone: "info" },
   accepted: { label: "Accepted", tone: "good" },
   declined: { label: "Declined", tone: "bad" },
 } satisfies Record<string, StatusDef>;
 
 export const CONTRACT_STATUSES = {
   draft: { label: "Draft", tone: "neutral" },
-  sent: { label: "Sent", tone: "warn" },
+  sent: { label: "Sent", tone: "info" },
   signed: { label: "Signed", tone: "good" },
   cancelled: { label: "Cancelled", tone: "bad" },
 } satisfies Record<string, StatusDef>;

@@ -69,7 +69,7 @@ export default async function JobOverview({ params }: { params: Promise<{ id: st
             <ul className="divide-y divide-line">
               {toCheck.map((s) => (
                 <li key={`s${s.id}`} className="flex items-center gap-3 px-4 py-3">
-                  <CheckCircle2 className="size-5 shrink-0 text-clay" />
+                  <CheckCircle2 className="size-5 shrink-0 text-leaf" />
                   <div className="min-w-0 flex-1">
                     <div className="text-sm font-medium">{s.name} – marked complete on site</div>
                     <div className="text-xs text-muted">Check the work, then sign it off {s.completedAt ? `· ${timeAgo(s.completedAt)}` : ""}</div>
@@ -81,7 +81,7 @@ export default async function JobOverview({ params }: { params: Promise<{ id: st
               ))}
               {issues.map(({ e, author }) => (
                 <li key={`e${e.id}`} className="flex items-start gap-3 px-4 py-3">
-                  <AlertTriangle className={cx("mt-0.5 size-5 shrink-0", e.type === "issue" ? "text-clay" : "text-clay")} />
+                  <AlertTriangle className={cx("mt-0.5 size-5 shrink-0", "text-clay")} />
                   <div className="min-w-0 flex-1">
                     <div className="text-sm">{e.body}</div>
                     <div className="text-xs text-muted">
@@ -99,7 +99,7 @@ export default async function JobOverview({ params }: { params: Promise<{ id: st
                 </AttentionLink>
               ))}
               {kprReqs.map((b) => (
-                <AttentionLink key={`b${b.id}`} href={`${base}/schedule`} icon={<HardHat className="size-5 text-clay" />}>
+                <AttentionLink key={`b${b.id}`} href={`${base}/schedule`} icon={<HardHat className="size-5 text-ink" />}>
                   KPR labour requested – {b.workers} worker{b.workers > 1 ? "s" : ""}, {fmtDate(b.date, { weekday: true })}
                   {b.days > 1 ? ` (${b.days} days)` : ""}
                 </AttentionLink>
@@ -175,7 +175,7 @@ export default async function JobOverview({ params }: { params: Promise<{ id: st
           />
           {job.description && <p className="prose-pre mt-4 border-t border-line pt-3 text-sm text-ink-2">{job.description}</p>}
           {job.siteInfo && (
-            <div className="mt-3 rounded-lg bg-clay-soft p-3 text-sm text-ink">
+            <div className="mt-3 rounded-lg border border-line bg-subtle p-3 text-sm text-ink">
               <div className="mb-0.5 text-xs font-semibold uppercase tracking-wide">Site info</div>
               <p className="prose-pre">{job.siteInfo}</p>
             </div>

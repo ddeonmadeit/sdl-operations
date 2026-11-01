@@ -43,7 +43,7 @@ function SideNav({ items }: { items: NavItem[] }) {
             <Icon className="size-[18px]" strokeWidth={active ? 2.3 : 2} />
             <span className="flex-1">{item.label}</span>
             {item.count ? (
-              <span className="rounded-full bg-clay px-1.5 py-px text-[0.7rem] font-semibold text-cream">{item.count}</span>
+              <span className="rounded-full bg-cream px-1.5 py-px text-[0.7rem] font-semibold text-olive">{item.count}</span>
             ) : null}
           </Link>
         );
@@ -75,7 +75,7 @@ function TabBar({ items, className }: { items: NavItem[]; className?: string }) 
               <span className="relative">
                 <Icon className="size-[22px]" strokeWidth={active ? 2.3 : 1.9} />
                 {item.count ? (
-                  <span className="absolute -top-1.5 -right-2.5 min-w-[1.1rem] rounded-full bg-clay px-1 text-center text-[0.62rem] leading-[1.1rem] font-bold text-cream">
+                  <span className="absolute -top-1.5 -right-2.5 min-w-[1.1rem] rounded-full bg-olive px-1 text-center text-[0.62rem] leading-[1.1rem] font-bold text-cream ring-2 ring-surface">
                     {item.count > 99 ? "99+" : item.count}
                   </span>
                 ) : null}

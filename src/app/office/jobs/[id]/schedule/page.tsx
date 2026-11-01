@@ -216,7 +216,7 @@ export default async function SchedulePage({ params }: { params: Promise<{ id: s
               <div className="relative">
                 {t0 >= rangeStart && (
                   <div className="pointer-events-none absolute top-0 bottom-0 z-10 ml-44 w-[calc(100%-11rem)]">
-                    <div className="absolute top-0 bottom-0 w-px bg-clay" style={{ left: `${pctOf(t0)}%` }} />
+                    <div className="absolute top-0 bottom-0 w-px bg-olive" style={{ left: `${pctOf(t0)}%` }} />
                   </div>
                 )}
                 {stageRows.map((s) => (

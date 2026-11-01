@@ -149,7 +149,7 @@ export default async function Dashboard() {
           ) : (
             <ul className="divide-y divide-line">
               {completeStages.map(({ s, job }) => (
-                <InboxRow key={`s${s.id}`} href="/office/approvals?tab=work" icon={<CheckCircle2 className="size-5 text-clay" />} title={`${s.name} complete – check work`} meta={`${job} · ${s.completedAt ? timeAgo(s.completedAt) : ""}`} />
+                <InboxRow key={`s${s.id}`} href="/office/approvals?tab=work" icon={<CheckCircle2 className="size-5 text-leaf" />} title={`${s.name} complete – check work`} meta={`${job} · ${s.completedAt ? timeAgo(s.completedAt) : ""}`} />
               ))}
               {newVars.map(({ v, job }) => (
                 <InboxRow key={`v${v.id}`} href={`/office/jobs/${v.jobId}/variations`} icon={<FilePen className="size-5 text-leaf" />} title={`New variation: ${v.title}`} meta={`${job} · needs pricing · ${timeAgo(v.createdAt)}`} />
@@ -158,7 +158,7 @@ export default async function Dashboard() {
                 <InboxRow
                   key={`e${e.id}`}
                   href={`/office/jobs/${e.jobId}`}
-                  icon={<AlertTriangle className={cx("size-5", e.type === "issue" ? "text-clay" : "text-clay")} />}
+                  icon={<AlertTriangle className={cx("size-5", "text-clay")} />}
                   title={e.body.length > 90 ? `${e.body.slice(0, 90)}…` : e.body}
                   meta={`${e.type === "issue" ? "Problem" : "Unforeseen"} · ${job} · ${author ?? ""} · ${timeAgo(e.createdAt)}`}
                 />
@@ -179,7 +179,7 @@ export default async function Dashboard() {
                 <InboxRow
                   key={`b${b.id}`}
                   href="/office/approvals?tab=labour"
-                  icon={<HardHat className="size-5 text-clay" />}
+                  icon={<HardHat className="size-5 text-ink" />}
                   title={`KPR labour request: ${b.workers} × ${relDay(b.date)}${b.days > 1 ? ` (${b.days} days)` : ""}`}
                   meta={`${job} · book with KPR`}
                 />
@@ -241,7 +241,7 @@ export default async function Dashboard() {
                 .filter((r) => addDays(r.b.date, r.b.days - 1) >= t0)
                 .map(({ b, job }) => (
                   <li key={`b${b.id}`} className="flex items-center gap-3 px-4 py-2.5">
-                    <span className="h-8 w-1 shrink-0 rounded-full bg-clay" />
+                    <span className="h-8 w-1 shrink-0 rounded-full bg-leaf-mid" />
                     <div className="min-w-0 flex-1">
                       <div className="truncate text-sm font-medium">
                         KPR · {b.workers} worker{b.workers > 1 ? "s" : ""} · {job}

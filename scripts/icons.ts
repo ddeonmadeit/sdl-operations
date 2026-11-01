@@ -3,15 +3,16 @@ import { readFileSync } from "node:fs";
 import sharp from "sharp";
 
 const OLIVE = "#404232";
-const CLAY = "#9B5D40";
+const LEAF = "#5E622C";
 const markCream = readFileSync("public/brand/logo-mark-cream.svg");
 const markColour = readFileSync("public/brand/logo-mark.svg");
 
-// Office = cream leaf on dark olive. Site = cream leaf on clay. Generic = olive.
+// Office = cream leaf on dark olive. Site = cream leaf on leaf olive. Generic = olive.
+// Clay is kept for problems only, never for branding.
 const variants = [
   { id: "icon", bg: OLIVE },
   { id: "office", bg: OLIVE },
-  { id: "site", bg: CLAY },
+  { id: "site", bg: LEAF },
 ];
 
 async function icon(bg: string, size: number, markShare: number, rounded: boolean) {

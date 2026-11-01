@@ -107,7 +107,7 @@ export default async function SchedulePage({ searchParams }: { searchParams: Pro
                         key={`b${b.id}`}
                         className={cx(
                           "mx-0.5 my-1 truncate rounded border px-2 py-1 text-[0.7rem] font-semibold",
-                          b.status === "booked" ? "border-clay bg-clay-soft text-clay-ink" : "border-dashed border-clay bg-surface text-clay-ink",
+                          b.status === "booked" ? "border-olive/30 bg-olive-soft text-ink" : "border-dashed border-clay bg-surface text-clay-ink",
                         )}
                         style={{ gridRow: st.length + i + 1, gridColumn: `${col(b.date) + 2} / ${col(addDays(b.date, b.days - 1)) + 3}` }}
                         title={b.task ?? ""}

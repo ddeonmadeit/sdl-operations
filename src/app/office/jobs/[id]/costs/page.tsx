@@ -66,7 +66,7 @@ export default async function CostsPage({ params }: { params: Promise<{ id: stri
                     <td className="px-3 py-2.5 text-right">{s.budget ? money(s.budget, true) : "–"}</td>
                     <td className="px-3 py-2.5 text-right">{s.committed ? money(s.committed, true) : "–"}</td>
                     <td className="px-3 py-2.5 text-right">{s.actual ? money(s.actual, true) : "–"}</td>
-                    <td className="px-3 py-2.5 text-right text-clay">{s.pending ? money(s.pending, true) : ""}</td>
+                    <td className="px-3 py-2.5 text-right text-muted">{s.pending ? money(s.pending, true) : ""}</td>
                     <td className={cx("px-4 py-2.5 text-right font-medium", projected > 0 && variance < 0 && "text-clay", projected > 0 && variance >= 0 && "text-leaf")}>
                       {projected ? money(variance, true) : ""}
                     </td>
@@ -96,7 +96,7 @@ export default async function CostsPage({ params }: { params: Promise<{ id: stri
                 <td className="px-3 py-2.5 text-right">{money(f.budget, true)}</td>
                 <td className="px-3 py-2.5 text-right">{money(f.committed, true)}</td>
                 <td className="px-3 py-2.5 text-right">{money(f.actual, true)}</td>
-                <td className="px-3 py-2.5 text-right text-clay">{f.pendingBills ? money(f.pendingBills, true) : ""}</td>
+                <td className="px-3 py-2.5 text-right text-muted">{f.pendingBills ? money(f.pendingBills, true) : ""}</td>
                 <td />
               </tr>
             </tfoot>

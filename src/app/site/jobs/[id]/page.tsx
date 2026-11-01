@@ -114,7 +114,7 @@ export default async function SiteJob({ params }: { params: Promise<{ id: string
                   Mark stage complete
                 </ActionButton>
               )}
-              {current.status === "complete" && <p className="text-sm text-clay">Waiting for the office to check and sign off.</p>}
+              {current.status === "complete" && <p className="text-sm text-muted">Waiting for the office to check and sign off.</p>}
               <Link href={`${base}/scope`} className="btn flex-1">
                 Scope
               </Link>
@@ -125,7 +125,7 @@ export default async function SiteJob({ params }: { params: Promise<{ id: string
       )}
 
       {job.siteInfo && (
-        <div className="mb-5 rounded-2xl bg-clay-soft p-4 text-sm text-ink">
+        <div className="mb-5 rounded-2xl border border-line bg-surface p-4 text-sm text-ink">
           <div className="mb-1 text-xs font-bold tracking-wide uppercase">Site info</div>
           <p className="prose-pre">{job.siteInfo}</p>
         </div>

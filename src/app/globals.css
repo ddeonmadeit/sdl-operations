@@ -4,6 +4,7 @@
   SDL Creations brand – the ONLY four colours used in the app:
     clay #9B5D40 · dark olive #404232 · cream #E7DED3 · leaf olive #5E622C
   Every other token below is a mix of these (lighter/darker shades of the same colours).
+  Clay is NOT a brand colour: use it only for problems and things that need attention.
 */
 @theme {
   --font-sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;

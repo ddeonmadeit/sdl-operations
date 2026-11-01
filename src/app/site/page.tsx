@@ -78,7 +78,7 @@ export default async function SiteToday() {
           <div className="card divide-y divide-line">
             {kprSoon.map(({ b, job }) => (
               <Link key={b.id} href={`/site/jobs/${b.jobId}`} className="flex items-center gap-3 px-4 py-3">
-                <HardHat className={cx("size-5 shrink-0", b.status === "booked" ? "text-leaf" : "text-clay")} />
+                <HardHat className={cx("size-5 shrink-0", b.status === "booked" ? "text-leaf" : "text-muted")} />
                 <div className="min-w-0 flex-1">
                   <div className="truncate text-sm font-medium">
                     {b.workers} worker{b.workers > 1 ? "s" : ""} · {relDay(b.date)}
