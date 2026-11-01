@@ -2,11 +2,29 @@
 
 Office dashboard/CRM and on-site app for **SDL Creations**. Both install on a phone like a normal app.
 
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/ddeonmadeit/sdl-operations)
+## Try it online and share it (free, about 5 minutes)
 
-**Test it online (free):** click the button above, sign in to Render with GitHub, enter an admin email and password (8+ characters), and click **Deploy Blueprint**. After a few minutes you get a link like `https://sdl-operations.onrender.com`. It **redeploys automatically every time this branch changes**.
-- Sign in with your admin email and password. Demo logins `office@sdl.test` (office) and `sam@sdl.test` (supervisor) use the same password.
-- Free plan limits: the site sleeps after 15 minutes idle (the first visit takes about a minute to wake), and the free database expires after 30 days. Upgrade the database to keep your data.
+Use **Vercel** (made by the team behind Next.js). You get a link like `sdl-operations.vercel.app` that you can send to anyone, and it **updates by itself every time this repo changes**.
+
+1. Go to [vercel.com/new](https://vercel.com/new), sign in with GitHub and **Import** `sdl-operations`.
+2. Open **Environment Variables** and add:
+   - `ADMIN_EMAIL`: your email (your login)
+   - `ADMIN_PASSWORD`: 8+ characters
+   - `LOAD_DEMO_DATA`: `true` (loads example jobs to click through)
+   - `APP_TIMEZONE`: e.g. `Australia/Brisbane`
+
+   Then click **Deploy**. The first deploy finishes without a database; that's expected.
+3. In the project, go to **Storage → Create Database → Neon (free)**. Choose the **Sydney** region and connect it to the project.
+4. Go to **Deployments → ⋯ → Redeploy**. Open the link at the top of the project page.
+
+Sign in with your admin email and password. Demo logins `office@sdl.test` (office) and `sam@sdl.test` (supervisor) use the same password. On a phone, open `/site` or `/office` and choose **Add to Home Screen**.
+
+Notes:
+- The app runs in Sydney (`vercel.json`), so keep the database in Sydney too.
+- Photos and plans are stored in the database. Files up to 4MB.
+- Vercel's free plan is for personal, non-commercial use. For ongoing business use, switch to Vercel Pro, or use Railway (below).
+
+**Railway** (about US$5/month, fine for business use): New Project → Deploy from GitHub repo → add **PostgreSQL**. In the app's Variables, set `DATABASE_URL` to `${{Postgres.DATABASE_URL}}` plus the variables above. Then go to Settings → Networking → **Generate Domain**. `railway.json` already sets the build and start commands.
 
 | App | URL | Who | Installs as |
 | --- | --- | --- | --- |
@@ -68,7 +86,7 @@ To remove the demo data later, start with an empty database and run `npm run db:
 
 The app is a standard Next.js server with a PostgreSQL database. The simplest options:
 
-**Railway or Render** (recommended: no server to look after)
+**Railway, Vercel or Render** (no server to look after): see the top of this file. Render also works via `render.yaml`:
 1. Create a project from this GitHub repo and add a PostgreSQL database.
 2. Set the variables: `DATABASE_URL` (from the database), `APP_URL` (your public URL), `APP_TIMEZONE` (e.g. `Australia/Brisbane`), `ADMIN_EMAIL`, `ADMIN_PASSWORD`.
 3. Build command: `npm run build`. Start command: `npm run start:prod`. This runs migrations and creates the admin login on first start.

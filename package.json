@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:deploy": "node scripts/prepare.mjs && next build",
     "start": "next start",
     "start:prod": "node scripts/migrate.mjs && next start",
     "typecheck": "tsc --noEmit",

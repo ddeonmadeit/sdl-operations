@@ -4,7 +4,16 @@ import { getSetting } from "./settings";
 
 export const emailEnabled = () => Boolean(process.env.SMTP_HOST);
 
-export const appUrl = () => (process.env.APP_URL || process.env.RENDER_EXTERNAL_URL || "http://localhost:3000").replace(/\/$/, "");
+const hostUrl = (domain?: string) => (domain ? `https://${domain}` : undefined);
+
+export const appUrl = () =>
+  (
+    process.env.APP_URL ||
+    process.env.RENDER_EXTERNAL_URL ||
+    hostUrl(process.env.VERCEL_PROJECT_PRODUCTION_URL) ||
+    hostUrl(process.env.RAILWAY_PUBLIC_DOMAIN) ||
+    "http://localhost:3000"
+  ).replace(/\/$/, "");
 
 /** Sends an email if SMTP is configured. Returns false when email is not set up. */
 export async function sendEmail(opts: { to: string; subject: string; text: string; replyTo?: string }) {

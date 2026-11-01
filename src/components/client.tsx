@@ -465,7 +465,8 @@ export function Uploader({
       } catch (err) {
         console.error(err);
         setItems((s) => s.map((i) => (i.key === key ? { ...i, error: true } : i)));
-        toast(`Couldn't upload ${file.name}`, "error");
+        const reason = err instanceof Error && err.message.length < 80 ? ` – ${err.message}` : "";
+        toast(`Couldn't upload ${file.name}${reason}`, "error");
       } finally {
         setBusy((b) => b - 1);
       }

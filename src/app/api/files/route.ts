@@ -4,7 +4,8 @@ import { files } from "@/db/schema";
 import { getUser } from "@/lib/auth";
 import { newStorageKey, putFile } from "@/lib/storage";
 
-const MAX_BYTES = 25 * 1024 * 1024;
+// Vercel caps request bodies at about 4.5MB; elsewhere allow large plan PDFs.
+const MAX_BYTES = (process.env.VERCEL ? 4 : 25) * 1024 * 1024;
 
 export async function POST(req: Request) {
   const user = await getUser();
@@ -13,7 +14,7 @@ export async function POST(req: Request) {
   const form = await req.formData();
   const file = form.get("file");
   if (!(file instanceof File)) return new NextResponse("No file", { status: 400 });
-  if (file.size > MAX_BYTES) return new NextResponse("File is too large (25MB max)", { status: 413 });
+  if (file.size > MAX_BYTES) return new NextResponse(`File is too large (${MAX_BYTES / 1024 / 1024}MB max)`, { status: 413 });
 
   const jobId = Number(form.get("jobId")) || null;
   const category = String(form.get("category") || "document");

@@ -9,10 +9,11 @@ import { randomToken } from "./auth";
 
 /**
  * File storage. Uses an S3-compatible bucket when S3_BUCKET is set,
- * the database when FILE_STORAGE=database (hosts without a persistent disk),
+ * the database when FILE_STORAGE=database or on Vercel/Railway/Render without a disk,
  * otherwise the local ./uploads folder (or UPLOAD_DIR).
  */
-const inDb = !process.env.S3_BUCKET && process.env.FILE_STORAGE === "database";
+const onDisklessHost = Boolean(process.env.VERCEL || process.env.RAILWAY_ENVIRONMENT || process.env.RENDER) && !process.env.UPLOAD_DIR;
+const inDb = !process.env.S3_BUCKET && (process.env.FILE_STORAGE === "database" || onDisklessHost);
 const s3 = process.env.S3_BUCKET
   ? {
       client: new AwsClient({
