@@ -66,8 +66,8 @@ export default async function CostsPage({ params }: { params: Promise<{ id: stri
                     <td className="px-3 py-2.5 text-right">{s.budget ? money(s.budget, true) : "–"}</td>
                     <td className="px-3 py-2.5 text-right">{s.committed ? money(s.committed, true) : "–"}</td>
                     <td className="px-3 py-2.5 text-right">{s.actual ? money(s.actual, true) : "–"}</td>
-                    <td className="px-3 py-2.5 text-right text-amber-700">{s.pending ? money(s.pending, true) : ""}</td>
-                    <td className={cx("px-4 py-2.5 text-right font-medium", projected > 0 && variance < 0 && "text-red-700", projected > 0 && variance >= 0 && "text-green-700")}>
+                    <td className="px-3 py-2.5 text-right text-clay">{s.pending ? money(s.pending, true) : ""}</td>
+                    <td className={cx("px-4 py-2.5 text-right font-medium", projected > 0 && variance < 0 && "text-clay", projected > 0 && variance >= 0 && "text-leaf")}>
                       {projected ? money(variance, true) : ""}
                     </td>
                   </tr>
@@ -96,7 +96,7 @@ export default async function CostsPage({ params }: { params: Promise<{ id: stri
                 <td className="px-3 py-2.5 text-right">{money(f.budget, true)}</td>
                 <td className="px-3 py-2.5 text-right">{money(f.committed, true)}</td>
                 <td className="px-3 py-2.5 text-right">{money(f.actual, true)}</td>
-                <td className="px-3 py-2.5 text-right text-amber-700">{f.pendingBills ? money(f.pendingBills, true) : ""}</td>
+                <td className="px-3 py-2.5 text-right text-clay">{f.pendingBills ? money(f.pendingBills, true) : ""}</td>
                 <td />
               </tr>
             </tfoot>
@@ -120,11 +120,11 @@ export default async function CostsPage({ params }: { params: Promise<{ id: stri
             </div>
             <div>
               <div className="text-xs text-muted">Invoiced</div>
-              <div className={cx("text-xl font-bold tabular-nums", kprDiff > 0.5 && "text-red-700")}>{hours(f.kprHoursBilled)}</div>
+              <div className={cx("text-xl font-bold tabular-nums", kprDiff > 0.5 && "text-clay")}>{hours(f.kprHoursBilled)}</div>
             </div>
           </div>
           {kprDiff > 0.5 && (
-            <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-800">
+            <p className="mt-3 rounded-lg bg-clay-soft px-3 py-2 text-sm text-clay-ink">
               KPR has invoiced {hours(kprDiff)} more than supervisors logged. Check before approving.
             </p>
           )}

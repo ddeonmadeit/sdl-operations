@@ -19,7 +19,7 @@ export function InductionForm({
     <ActionForm action={action} success="Induction signed">
       <div className="space-y-4">
         {siteInfo && (
-          <div className="rounded-xl bg-amber-50 p-4 text-sm text-amber-950">
+          <div className="rounded-xl bg-clay-soft p-4 text-sm text-ink">
             <div className="mb-1 text-xs font-bold tracking-wide uppercase">Site information</div>
             <p className="prose-pre">{siteInfo}</p>
           </div>

@@ -228,7 +228,7 @@ function Total({ label, value, strong, tone }: { label: string; value: string; s
   return (
     <div className="leading-tight">
       <div className="text-[0.7rem] font-medium text-muted">{label}</div>
-      <div className={cx("tabular-nums", strong ? "text-lg font-bold" : "text-sm font-semibold", tone === "bad" && "text-red-700", tone === "good" && "text-green-700")}>{value}</div>
+      <div className={cx("tabular-nums", strong ? "text-lg font-bold" : "text-sm font-semibold", tone === "bad" && "text-clay", tone === "good" && "text-leaf")}>{value}</div>
     </div>
   );
 }

@@ -25,7 +25,8 @@ const s3 = process.env.S3_BUCKET
     }
   : null;
 
-const localDir = path.resolve(process.env.UPLOAD_DIR || "uploads");
+// Upload folder is chosen at runtime, so tell the bundler not to trace it.
+const localDir = path.resolve(/*turbopackIgnore: true*/ process.env.UPLOAD_DIR || "uploads");
 
 export function newStorageKey(filename: string) {
   const ext = path.extname(filename).toLowerCase().replace(/[^.a-z0-9]/g, "").slice(0, 8);
@@ -47,9 +48,9 @@ export async function putFile(key: string, data: Buffer, contentType: string) {
     await db.insert(blobs).values({ key, data });
     return;
   }
-  const full = path.join(localDir, key);
-  await mkdir(path.dirname(full), { recursive: true });
-  await writeFile(full, data);
+  const full = path.join(/*turbopackIgnore: true*/ localDir, key);
+  await mkdir(/*turbopackIgnore: true*/ path.dirname(full), { recursive: true });
+  await writeFile(/*turbopackIgnore: true*/ full, data);
 }
 
 export async function getFile(key: string): Promise<Buffer | null> {
@@ -63,9 +64,9 @@ export async function getFile(key: string): Promise<Buffer | null> {
     return row?.data ?? null;
   }
   try {
-    const full = path.join(localDir, key);
+    const full = path.join(/*turbopackIgnore: true*/ localDir, key);
     if (!full.startsWith(localDir)) return null;
-    return await readFile(full);
+    return await readFile(/*turbopackIgnore: true*/ full);
   } catch {
     return null;
   }
@@ -81,6 +82,6 @@ export async function deleteFile(key: string) {
     return;
   }
   try {
-    await unlink(path.join(localDir, key));
+    await unlink(path.join(/*turbopackIgnore: true*/ localDir, key));
   } catch {}
 }

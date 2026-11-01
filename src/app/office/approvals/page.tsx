@@ -177,7 +177,7 @@ function InvoicesTab({ rows }: { rows: PendingRow[] }) {
                         <span className="truncate">{job}</span>
                         {stage && <span>· {stage}</span>}
                         {b.kind === "subcontractor" && stageStatus && (
-                          <Badge tone={stageStatus === "signed_off" ? "green" : stageStatus === "complete" ? "amber" : "red"}>
+                          <Badge tone={stageStatus === "signed_off" ? "good" : stageStatus === "complete" ? "warn" : "bad"}>
                             {stageStatus === "signed_off" ? "Work signed off" : stageStatus === "complete" ? "Work needs checking" : "Work not complete"}
                           </Badge>
                         )}
@@ -236,14 +236,14 @@ async function HoursTab() {
                 <Avatar name={w.user} size="sm" /> {w.user} · week of {fmtDate(w.week)}
               </span>
             }
-            action={pending.length === 0 ? <Badge tone="green">Approved</Badge> : <Badge tone="amber">To approve</Badge>}
+            action={pending.length === 0 ? <Badge tone="good">Approved</Badge> : <Badge tone="warn">To approve</Badge>}
           >
             <div className="grid grid-cols-7 gap-1 text-center text-xs">
               {days.map((d) => {
                 const h = w.rows.filter((r) => r.l.date === d).reduce((s, r) => s + r.l.hours, 0);
                 return (
                   <div key={d} className={cx("rounded-lg py-1.5", h ? "bg-accent-soft" : "bg-subtle")}>
-                    <div className="text-muted">{fmtDate(d, { weekday: true }).split(" ")[0]}</div>
+                    <div className="text-muted">{fmtDate(d, { weekday: true }).split(" ")[0]!.replace(",", "")}</div>
                     <div className="font-semibold tabular-nums">{h ? h : "–"}</div>
                   </div>
                 );

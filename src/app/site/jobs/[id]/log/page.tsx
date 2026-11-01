@@ -105,7 +105,7 @@ export default async function DailyLogPage({ params, searchParams }: { params: P
             <span className="label">Weather</span>
             <div className="flex flex-wrap gap-1.5">
               {WEATHER.map((w) => (
-                <label key={w} className="cursor-pointer rounded-full border border-line-strong px-3 py-1.5 text-sm has-[:checked]:border-accent has-[:checked]:bg-accent has-[:checked]:text-white">
+                <label key={w} className="cursor-pointer rounded-full border border-line-strong px-3 py-1.5 text-sm has-[:checked]:border-accent has-[:checked]:bg-accent has-[:checked]:text-cream">
                   <input type="radio" name="weather" value={w} defaultChecked={(log?.weather ?? "") === w} className="sr-only" />
                   {w}
                 </label>

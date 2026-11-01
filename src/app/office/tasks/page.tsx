@@ -57,11 +57,11 @@ export default async function TasksPage({ searchParams }: { searchParams: Promis
       />
       {view === "all" && (
         <div className="scrollbar-none -mt-2 mb-4 flex gap-1.5 overflow-x-auto">
-          <a href="/office/tasks?view=all" className={`shrink-0 rounded-full border px-3 py-1 text-sm ${!who ? "border-ink bg-ink text-white" : "border-line-strong bg-surface"}`}>
+          <a href="/office/tasks?view=all" className={`shrink-0 rounded-full border px-3 py-1 text-sm ${!who ? "border-ink bg-ink text-cream" : "border-line-strong bg-surface"}`}>
             Everyone
           </a>
           {people.map((p) => (
-            <a key={p.id} href={`/office/tasks?view=all&who=${p.id}`} className={`shrink-0 rounded-full border px-3 py-1 text-sm ${who === String(p.id) ? "border-ink bg-ink text-white" : "border-line-strong bg-surface"}`}>
+            <a key={p.id} href={`/office/tasks?view=all&who=${p.id}`} className={`shrink-0 rounded-full border px-3 py-1 text-sm ${who === String(p.id) ? "border-ink bg-ink text-cream" : "border-line-strong bg-surface"}`}>
               {p.name}
             </a>
           ))}

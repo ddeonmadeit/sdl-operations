@@ -75,7 +75,7 @@ export default async function QuotesPage({ params }: { params: Promise<{ id: str
                   <div className="min-w-0">
                     <div className="flex items-center gap-2 font-medium">
                       Q{q.id} · {q.title}
-                      {q.kind === "estimate" && <Badge tone="violet">Estimate</Badge>}
+                      {q.kind === "estimate" && <Badge tone="strong">Estimate</Badge>}
                     </div>
                     <div className="text-xs text-muted">
                       {q.sentAt ? `Sent ${fmtDate(q.sentAt.toISOString())}` : `Created ${fmtDate(q.createdAt.toISOString())}`}

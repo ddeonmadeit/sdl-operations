@@ -107,7 +107,7 @@ export function VariationCard({
             <span className="tabular-nums">{v.costCents ? money(v.costCents) : "–"}</span>
           </span>
           {v.priceCents > 0 && (
-            <span className={margin < 0 ? "text-red-700" : "text-green-700"}>
+            <span className={margin < 0 ? "text-clay" : "text-leaf"}>
               <span className="text-muted">Margin </span>
               <span className="tabular-nums">{money(margin)}</span>
             </span>

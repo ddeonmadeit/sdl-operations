@@ -10,9 +10,9 @@ import { cancelBooking, requestBooking, updateBooking } from "@/lib/actions/labo
 import { addStage, deleteStage, moveStage, setStageStatus, updateStage } from "@/lib/actions/jobs";
 import { sendDoc } from "@/lib/actions/send";
 import { requireOffice } from "@/lib/auth";
-import { BOOKING_STATUSES, STAGE_STATUSES } from "@/lib/constants";
+import { BOOKING_STATUSES, STAGE_STATUSES, stageBarClass } from "@/lib/constants";
 import { emailEnabled } from "@/lib/email";
-import { addDays, centsToInput, daysBetween, fmtDate, money, today, weekStart } from "@/lib/format";
+import { addDays, centsToInput, daysBetween, fmtDate, money, timeAgo, today, weekStart } from "@/lib/format";
 import { docMessage } from "@/lib/messages";
 import { contactOptions, getJob, jobStages } from "@/lib/queries";
 
@@ -83,6 +83,14 @@ export default async function SchedulePage({ params }: { params: Promise<{ id: s
   ]);
   const smtp = emailEnabled();
   const bookingMsgs = await Promise.all(bookings.map((b) => docMessage("booking", b.b.id)));
+  // Subbies with dates can be sent their booking straight from the stage.
+  const stageMsgs = new Map(
+    await Promise.all(
+      stageRows
+        .filter((s) => s.kind === "subcontractor" && s.contact && s.startDate && (s.status === "not_started" || s.status === "in_progress"))
+        .map(async (s) => [s.id, await docMessage("stage", s.id)] as const),
+    ),
+  );
 
   // Simple Gantt range: from the earliest start to latest finish (or 8 weeks from today)
   const dated = stageRows.filter((s) => s.startDate);
@@ -124,14 +132,32 @@ export default async function SchedulePage({ params }: { params: Promise<{ id: s
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
                     <span className="font-medium">{s.name}</span>
-                    {s.kind === "sdl" && <Badge tone="violet">SDL + KPR</Badge>}
+                    {s.kind === "sdl" && <Badge tone="strong">SDL + KPR</Badge>}
                   </div>
                   <div className="text-xs text-muted">
-                    {s.contact?.name ?? (s.kind === "sdl" ? "SDL supervisor" : <span className="text-amber-700">No subcontractor assigned</span>)}
+                    {s.contact?.name ?? (s.kind === "sdl" ? "SDL supervisor" : <span className="text-clay">No subcontractor assigned</span>)}
                     {" · "}
                     {s.startDate ? `${fmtDate(s.startDate, { weekday: true })} → ${s.endDate ? fmtDate(s.endDate, { weekday: true }) : "?"}` : "Not scheduled"}
                     {s.budgetCents ? ` · Budget ${money(s.budgetCents, true)}` : ""}
                   </div>
+                  {stageMsgs.get(s.id) && (
+                    <div className="mt-1.5 flex flex-wrap items-center gap-2 text-xs">
+                      {s.notifiedAt ? (
+                        <span className="font-medium text-leaf">✓ Dates sent to subbie {timeAgo(s.notifiedAt)}</span>
+                      ) : (
+                        <span className="font-medium text-clay">Subbie not told yet</span>
+                      )}
+                      <SendDialog
+                        title={`Send ${s.name} dates to ${s.contact!.name}`}
+                        trigger={s.notifiedAt ? "Resend" : "Send dates"}
+                        triggerClassName={s.notifiedAt ? "btn btn-ghost btn-sm h-7 px-2 text-xs" : "btn btn-sm h-7 px-2.5 text-xs"}
+                        message={stageMsgs.get(s.id)!}
+                        smtp={smtp}
+                        action={sendDoc.bind(null, "stage", s.id)}
+                        manualLabel="Told them by phone – mark sent"
+                      />
+                    </div>
+                  )}
                 </div>
                 <div className="flex w-full items-center gap-2 pl-9 sm:w-auto sm:pl-0">
                   <StatusBadge map={STAGE_STATUSES} value={s.status} />
@@ -190,7 +216,7 @@ export default async function SchedulePage({ params }: { params: Promise<{ id: s
               <div className="relative">
                 {t0 >= rangeStart && (
                   <div className="pointer-events-none absolute top-0 bottom-0 z-10 ml-44 w-[calc(100%-11rem)]">
-                    <div className="absolute top-0 bottom-0 w-px bg-red-500" style={{ left: `${pctOf(t0)}%` }} />
+                    <div className="absolute top-0 bottom-0 w-px bg-clay" style={{ left: `${pctOf(t0)}%` }} />
                   </div>
                 )}
                 {stageRows.map((s) => (
@@ -200,8 +226,8 @@ export default async function SchedulePage({ params }: { params: Promise<{ id: s
                       {s.startDate && (
                         <div
                           className={cx(
-                            "absolute top-0.5 bottom-0.5 rounded px-1.5 text-[0.65rem] leading-5 font-semibold text-white truncate",
-                            s.status === "signed_off" ? "bg-green-600" : s.status === "complete" ? "bg-amber-500" : s.status === "in_progress" ? "bg-blue-600" : s.kind === "sdl" ? "bg-violet-500" : "bg-slate-400",
+                            "absolute top-0.5 bottom-0.5 truncate rounded px-1.5 text-[0.65rem] leading-5 font-semibold",
+                            stageBarClass(s.status, s.kind),
                           )}
                           style={{
                             left: `${pctOf(s.startDate)}%`,

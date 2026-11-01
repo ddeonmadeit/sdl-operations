@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { and, asc, eq, gte, inArray, lte } from "drizzle-orm";
 import { CheckCircle2, ChevronRight, ClipboardList, HardHat, MapPin } from "lucide-react";
+import { Logo } from "@/components/brand";
 import { Section } from "@/components/site/site-ui";
 import { TaskList } from "@/components/shared";
 import { cx, EmptyState, ProgressBar } from "@/components/ui";
@@ -50,6 +51,10 @@ export default async function SiteToday() {
   return (
     <>
       <header className="mb-5 pt-2">
+        <div className="mb-3 flex items-center justify-between">
+          <Logo className="w-28" />
+          <span className="text-xs font-semibold tracking-wide text-muted uppercase">Site</span>
+        </div>
         <div className="text-sm font-medium text-muted">{fmtDate(t0, { weekday: true })}</div>
         <h1 className="text-[1.75rem] leading-tight font-bold tracking-tight">G&apos;day {me.name.split(" ")[0]}</h1>
       </header>
@@ -73,7 +78,7 @@ export default async function SiteToday() {
           <div className="card divide-y divide-line">
             {kprSoon.map(({ b, job }) => (
               <Link key={b.id} href={`/site/jobs/${b.jobId}`} className="flex items-center gap-3 px-4 py-3">
-                <HardHat className={cx("size-5 shrink-0", b.status === "booked" ? "text-green-600" : "text-amber-600")} />
+                <HardHat className={cx("size-5 shrink-0", b.status === "booked" ? "text-leaf" : "text-clay")} />
                 <div className="min-w-0 flex-1">
                   <div className="truncate text-sm font-medium">
                     {b.workers} worker{b.workers > 1 ? "s" : ""} · {relDay(b.date)}
@@ -136,7 +141,7 @@ function JobCard({ j, compact }: { j: Awaited<ReturnType<typeof siteJobs>>[numbe
       {!compact && (
         <Link
           href={`/site/jobs/${j.id}/log`}
-          className={cx("flex items-center gap-2 border-t px-4 py-2.5 text-sm font-semibold", j.loggedToday ? "border-line bg-green-50 text-green-800" : "border-line bg-accent-soft text-accent")}
+          className={cx("flex items-center gap-2 border-t px-4 py-2.5 text-sm font-semibold", j.loggedToday ? "border-line bg-leaf-soft text-leaf" : "border-olive bg-olive text-cream")}
         >
           {j.loggedToday ? <CheckCircle2 className="size-4" /> : <ClipboardList className="size-4" />}
           {j.loggedToday ? "Today's log done – edit" : "Fill in today's daily log"}

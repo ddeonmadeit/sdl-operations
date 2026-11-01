@@ -1,7 +1,8 @@
 import "server-only";
-import { and, desc, eq, inArray } from "drizzle-orm";
+import { and, desc, eq, inArray, isNotNull, or } from "drizzle-orm";
 import { db } from "@/db";
-import { dailyLogs, entries, files, inductions, labourEntries, stages, users } from "@/db/schema";
+import { dailyLogs, entries, files, inductions, labourEntries, scopeItems, stages, users } from "@/db/schema";
+import { isoDay } from "./format";
 
 export type DiaryItem =
   | {
@@ -32,6 +33,14 @@ export type DiaryItem =
       photos: { id: number; name: string; mimeType: string }[];
     }
   | {
+      kind: "done";
+      at: Date;
+      id: string;
+      text: string;
+      items: string[];
+      by: string | null;
+    }
+  | {
       kind: "induction";
       at: Date;
       id: number;
@@ -45,6 +54,7 @@ export type DiaryItem =
 export async function loadDiary(jobId: number, filter?: string, limit = 60): Promise<DiaryItem[]> {
   const wantLogs = !filter || filter === "log";
   const wantInductions = !filter || filter === "induction";
+  const wantDone = !filter || filter === "done";
   const entryTypes = !filter ? null : filter === "photo" ? ["photo", "note", "client", "issue", "unforeseen"] : [filter];
 
   const [logs, ents, inds] = await Promise.all([
@@ -58,7 +68,7 @@ export async function loadDiary(jobId: number, filter?: string, limit = 60): Pro
           .orderBy(desc(dailyLogs.date))
           .limit(limit)
       : Promise.resolve([]),
-    filter === "log" || filter === "induction"
+    filter === "log" || filter === "induction" || filter === "done"
       ? Promise.resolve([])
       : db
           .select({ e: entries, author: users.name })
@@ -77,6 +87,24 @@ export async function loadDiary(jobId: number, filter?: string, limit = 60): Pro
           .limit(limit)
       : Promise.resolve([]),
   ]);
+
+  // Completed work for the timeline: scope items ticked off and stages finished.
+  const [doneScope, doneStages] = wantDone
+    ? await Promise.all([
+        db
+          .select({ description: scopeItems.description, doneAt: scopeItems.doneAt, by: users.name, byId: scopeItems.doneById })
+          .from(scopeItems)
+          .leftJoin(users, eq(users.id, scopeItems.doneById))
+          .where(and(eq(scopeItems.jobId, jobId), isNotNull(scopeItems.doneAt)))
+          .orderBy(desc(scopeItems.doneAt))
+          .limit(limit * 3),
+        db
+          .select({ id: stages.id, name: stages.name, completedAt: stages.completedAt, signedOffAt: stages.signedOffAt, by: users.name })
+          .from(stages)
+          .leftJoin(users, eq(users.id, stages.completedById))
+          .where(and(eq(stages.jobId, jobId), or(isNotNull(stages.completedAt), isNotNull(stages.signedOffAt)))),
+      ])
+    : [[], []];
 
   const logIds = logs.map((l) => l.log.id);
   const entryIds = ents.map((e) => e.e.id);
@@ -136,6 +164,22 @@ export async function loadDiary(jobId: number, filter?: string, limit = 60): Pro
   for (const { i, by } of inds) {
     items.push({ kind: "induction", at: i.createdAt, id: i.id, name: i.name, company: i.company, selfSigned: i.selfSigned, by });
   }
+  // Group ticked-off scope items by person and day, so a busy day reads as one line.
+  const groups = new Map<string, { at: Date; by: string | null; items: string[] }>();
+  for (const d of doneScope) {
+    const key = `${d.byId ?? 0}|${isoDay(d.doneAt!)}`;
+    const g = groups.get(key) ?? { at: d.doneAt!, by: d.by, items: [] };
+    g.items.push(d.description);
+    groups.set(key, g);
+  }
+  for (const [key, g] of groups) {
+    items.push({ kind: "done", at: g.at, id: `s${key}`, by: g.by, items: g.items, text: `Completed ${g.items.length} scope item${g.items.length > 1 ? "s" : ""}` });
+  }
+  for (const st of doneStages) {
+    if (st.completedAt) items.push({ kind: "done", at: st.completedAt, id: `c${st.id}`, by: st.by, items: [], text: `${st.name} marked complete on site` });
+    if (st.signedOffAt) items.push({ kind: "done", at: st.signedOffAt, id: `o${st.id}`, by: null, items: [], text: `${st.name} checked and signed off by the office` });
+  }
+
   // Daily logs sort by their date (end of that day) so they sit with that day's notes.
   const sortKey = (x: DiaryItem) => (x.kind === "log" ? Math.max(new Date(`${x.date}T23:59:00`).getTime() - 86_400_000 / 2, 0) : x.at.getTime());
   return items.sort((a, b) => sortKey(b) - sortKey(a)).slice(0, limit * 2);

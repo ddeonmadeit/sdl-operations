@@ -26,7 +26,7 @@ function PersonRow({ p }: { p: Person }) {
           <a href={`sms:${p.phone.replace(/[^\d+]/g, "")}`} className="btn btn-icon btn-sm rounded-full" aria-label={`Text ${p.name}`}>
             <MessageSquare className="size-4" />
           </a>
-          <a href={telHref(p.phone)} className="btn btn-icon btn-sm rounded-full border-accent bg-accent text-white" aria-label={`Call ${p.name}`}>
+          <a href={telHref(p.phone)} className="btn btn-icon btn-sm rounded-full border-accent bg-accent text-cream" aria-label={`Call ${p.name}`}>
             <Phone className="size-4" />
           </a>
         </>

@@ -56,7 +56,7 @@ export default async function ContactsPage({ searchParams }: { searchParams: Pro
               <Link href={`/office/contacts/${c.id}`} className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
                   <span className="truncate font-medium hover:underline">{c.name}</span>
-                  <Badge tone={c.type === "client" ? "blue" : c.type === "subcontractor" ? "violet" : c.type === "labour_hire" ? "amber" : "gray"}>
+                  <Badge tone={c.type === "client" ? "info" : c.type === "subcontractor" ? "strong" : c.type === "labour_hire" ? "warn" : "neutral"}>
                     {CONTACT_TYPES[c.type as ContactType]}
                   </Badge>
                 </div>

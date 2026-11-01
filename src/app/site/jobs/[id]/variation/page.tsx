@@ -25,7 +25,7 @@ export default async function SiteVariation({ params }: { params: Promise<{ id: 
                   ["client", "Client asked"],
                   ["site", "Site condition"],
                 ].map(([v, l]) => (
-                  <label key={v} className="flex flex-1 cursor-pointer items-center justify-center rounded-xl border border-line-strong py-2.5 text-sm font-medium has-[:checked]:border-accent has-[:checked]:bg-accent has-[:checked]:text-white">
+                  <label key={v} className="flex flex-1 cursor-pointer items-center justify-center rounded-xl border border-line-strong py-2.5 text-sm font-medium has-[:checked]:border-accent has-[:checked]:bg-accent has-[:checked]:text-cream">
                     <input type="radio" name="source" value={v} defaultChecked={v === "client"} className="sr-only" />
                     {l}
                   </label>

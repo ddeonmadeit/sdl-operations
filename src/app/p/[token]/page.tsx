@@ -1,6 +1,7 @@
 import { asc, eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { CheckCircle2 } from "lucide-react";
+import { Logo } from "@/components/brand";
 import { PrintButton } from "@/components/print-button";
 import { SignForm } from "@/components/sign-form";
 import { db } from "@/db";
@@ -134,7 +135,8 @@ export default async function PublicDoc({ params }: { params: Promise<{ token: s
       <article className="card print-plain p-5 sm:p-8">
         <header className="mb-6 flex flex-wrap items-start justify-between gap-4 border-b border-line pb-5">
           <div>
-            <div className="text-xl font-bold">{company.name}</div>
+            <Logo className="mb-2 w-40" />
+            <div className="sr-only">{company.name}</div>
             <div className="text-xs leading-relaxed text-muted">
               {[company.abn && `ABN ${company.abn}`, company.licence && `Lic. ${company.licence}`].filter(Boolean).join(" · ")}
               {company.address && <div>{company.address}</div>}
@@ -160,7 +162,7 @@ export default async function PublicDoc({ params }: { params: Promise<{ token: s
         </div>
         {body}
         {signed && (
-          <div className="mt-6 flex items-center gap-4 rounded-xl bg-green-50 p-4 text-sm text-green-900">
+          <div className="mt-6 flex items-center gap-4 rounded-xl bg-leaf-soft p-4 text-sm text-leaf">
             <CheckCircle2 className="size-6 shrink-0" />
             <div className="flex-1">
               Signed by <b>{signed.name}</b>
@@ -168,7 +170,7 @@ export default async function PublicDoc({ params }: { params: Promise<{ token: s
             </div>
             {signed.sig && signed.sig.length > 100 && (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={signed.sig} alt="Signature" className="h-12 rounded bg-white px-2" />
+              <img src={signed.sig} alt="Signature" className="h-12 rounded bg-surface px-2" />
             )}
           </div>
         )}

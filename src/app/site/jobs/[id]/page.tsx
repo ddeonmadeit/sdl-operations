@@ -1,11 +1,12 @@
 import Link from "next/link";
-import { and, count, eq, isNotNull } from "drizzle-orm";
+import { and, count, eq, inArray, isNotNull } from "drizzle-orm";
 import {
   AlertTriangle,
   Camera,
   ChevronRight,
   ClipboardList,
   FilePen,
+  FileSignature,
   FileText,
   HardHat,
   ListChecks,
@@ -21,7 +22,7 @@ import { ActionButton } from "@/components/client";
 import { ActionTile, Section, SiteHeader } from "@/components/site/site-ui";
 import { cx, StatusBadge } from "@/components/ui";
 import { db } from "@/db";
-import { dailyLogs, files, inductions, scopeItems } from "@/db/schema";
+import { contracts, dailyLogs, files, inductions, scopeItems } from "@/db/schema";
 import { setStageStatus } from "@/lib/actions/jobs";
 import { requireUser } from "@/lib/auth";
 import { STAGE_STATUSES } from "@/lib/constants";
@@ -33,13 +34,14 @@ export default async function SiteJob({ params }: { params: Promise<{ id: string
   const { id } = await params;
   const job = await getJob(Number(id));
   const base = `/site/jobs/${job.id}`;
-  const [stageRows, [scope], [scopeDone], [plans], [inducted], [logToday]] = await Promise.all([
+  const [stageRows, [scope], [scopeDone], [plans], [inducted], [logToday], [agreements]] = await Promise.all([
     jobStages(job.id),
     db.select({ n: count() }).from(scopeItems).where(eq(scopeItems.jobId, job.id)),
     db.select({ n: count() }).from(scopeItems).where(and(eq(scopeItems.jobId, job.id), isNotNull(scopeItems.doneAt))),
     db.select({ n: count() }).from(files).where(and(eq(files.jobId, job.id), eq(files.ownerType, "job"))),
     db.select({ n: count() }).from(inductions).where(eq(inductions.jobId, job.id)),
     db.select({ n: count() }).from(dailyLogs).where(and(eq(dailyLogs.jobId, job.id), eq(dailyLogs.date, today()), eq(dailyLogs.authorId, me.id))),
+    db.select({ n: count() }).from(contracts).where(and(eq(contracts.jobId, job.id), inArray(contracts.status, ["sent", "signed"]))),
   ]);
   const current = stageRows.find((s) => s.status === "in_progress") ?? stageRows.find((s) => s.status === "complete") ?? stageRows.find((s) => s.status === "not_started");
   const next = current ? stageRows[stageRows.indexOf(current) + 1] : undefined;
@@ -70,7 +72,7 @@ export default async function SiteJob({ params }: { params: Promise<{ id: string
         <ActionTile href={`${base}/induction`} icon={<UserPlus className="size-5" />} label="Induct a worker" />
         <ActionTile href={`${base}/note?type=photo`} icon={<Camera className="size-5" />} label="Photos / note" />
         <ActionTile href={`${base}/note?type=client`} icon={<MessageSquare className="size-5" />} label="Client conversation" />
-        <ActionTile href={`${base}/note?type=issue`} icon={<AlertTriangle className="size-5 text-red-700" />} label="Problem / unforeseen" tone="warn" />
+        <ActionTile href={`${base}/note?type=issue`} icon={<AlertTriangle className="size-5 text-clay" />} label="Problem / unforeseen" tone="warn" />
         <ActionTile href={`${base}/variation`} icon={<FilePen className="size-5" />} label="Potential variation" />
         <ActionTile href={`${base}/task`} icon={<NotebookPen className="size-5" />} label="Follow-up task" />
         <ActionTile href={`${base}/kpr`} icon={<HardHat className="size-5" />} label="Request KPR labour" />
@@ -84,7 +86,14 @@ export default async function SiteJob({ params }: { params: Promise<{ id: string
                 <div className="text-base font-semibold">{current.name}</div>
                 <div className="text-sm text-muted">
                   {current.contact?.name ?? (current.kind === "sdl" ? "SDL + KPR" : "No subcontractor")}
-                  {current.startDate ? ` · ${fmtDate(current.startDate)} – ${fmtDate(current.endDate)}` : ""}
+                  {current.startDate && (
+                    <>
+                      {" · "}
+                      <span className="whitespace-nowrap">
+                        {fmtDate(current.startDate)} – {fmtDate(current.endDate)}
+                      </span>
+                    </>
+                  )}
                 </div>
               </div>
               <StatusBadge map={STAGE_STATUSES} value={current.status} />
@@ -105,7 +114,7 @@ export default async function SiteJob({ params }: { params: Promise<{ id: string
                   Mark stage complete
                 </ActionButton>
               )}
-              {current.status === "complete" && <p className="text-sm text-amber-800">Waiting for the office to check and sign off.</p>}
+              {current.status === "complete" && <p className="text-sm text-clay">Waiting for the office to check and sign off.</p>}
               <Link href={`${base}/scope`} className="btn flex-1">
                 Scope
               </Link>
@@ -116,7 +125,7 @@ export default async function SiteJob({ params }: { params: Promise<{ id: string
       )}
 
       {job.siteInfo && (
-        <div className="mb-5 rounded-2xl bg-amber-50 p-4 text-sm text-amber-950">
+        <div className="mb-5 rounded-2xl bg-clay-soft p-4 text-sm text-ink">
           <div className="mb-1 text-xs font-bold tracking-wide uppercase">Site info</div>
           <p className="prose-pre">{job.siteInfo}</p>
         </div>
@@ -128,6 +137,7 @@ export default async function SiteJob({ params }: { params: Promise<{ id: string
             { href: `${base}/scope`, icon: ListChecks, label: "Scope of works", meta: scope?.n ? `${scopeDone?.n ?? 0}/${scope.n} done` : "None yet" },
             { href: `${base}/schedule`, icon: CalendarDays, label: "Schedule & labour", meta: `${stageRows.length} stages` },
             { href: `${base}/plans`, icon: FileText, label: "Plans & documents", meta: `${plans?.n ?? 0}` },
+            { href: `${base}/contracts`, icon: FileSignature, label: "Contracts & agreements", meta: `${agreements?.n ?? 0}` },
             { href: `${base}/contacts`, icon: Users, label: "Contacts", meta: "" },
             { href: `${base}/diary`, icon: NotebookPen, label: "Site diary", meta: "" },
             { href: `${base}/induction`, icon: HardHat, label: "Induction register", meta: `${inducted?.n ?? 0} signed` },

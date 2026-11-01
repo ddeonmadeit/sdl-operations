@@ -75,7 +75,7 @@ export default async function BillPage({ params }: { params: Promise<{ id: strin
       label: limit
         ? `Billed to date incl. this: ${money(billedTotal)} of ${money(limit)} ${agreement ? "agreed" : "budget"}`
         : "No agreement amount to compare against",
-      detail: limit && billedTotal > limit ? <span className="text-red-700">Over by {money(billedTotal - limit)} – is there an approved variation?</span> : null,
+      detail: limit && billedTotal > limit ? <span className="text-clay">Over by {money(billedTotal - limit)} – is there an approved variation?</span> : null,
     });
     checks.push({ ok: agreement ? agreement.status === "signed" : false, label: agreement ? `Subcontract agreement ${agreement.status}` : "No subcontract agreement on file" });
   } else if (b.kind === "labour_hire") {
@@ -103,7 +103,7 @@ export default async function BillPage({ params }: { params: Promise<{ id: strin
     checks.push({
       ok: b.hours != null ? Math.abs(b.hours - loggedTotal) < 0.5 : null,
       label: b.hours != null ? `Hours: ${hours(b.hours)} invoiced vs ${hours(loggedTotal)} logged on site` : `${hours(loggedTotal)} logged on site – enter billed hours to compare`,
-      detail: b.hours != null && b.hours - loggedTotal >= 0.5 ? <span className="text-red-700">{hours(b.hours - loggedTotal)} more than the supervisor logged</span> : null,
+      detail: b.hours != null && b.hours - loggedTotal >= 0.5 ? <span className="text-clay">{hours(b.hours - loggedTotal)} more than the supervisor logged</span> : null,
     });
     if (rates.kprHourlyCents)
       checks.push({
@@ -151,15 +151,15 @@ export default async function BillPage({ params }: { params: Promise<{ id: strin
         }
       />
       <div className="grid gap-5 lg:grid-cols-[1fr_340px]">
-        <div className="space-y-5">
+        <div className="min-w-0 space-y-5">
           <Card title="Checks before payment" pad={false}>
             <ul className="divide-y divide-line">
               {checks.map((c, i) => (
                 <li key={i} className="flex items-start gap-3 px-4 py-3">
                   {c.ok === true ? (
-                    <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-green-600" />
+                    <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-leaf" />
                   ) : c.ok === false ? (
-                    <AlertTriangle className="mt-0.5 size-5 shrink-0 text-red-600" />
+                    <AlertTriangle className="mt-0.5 size-5 shrink-0 text-clay" />
                   ) : (
                     <CircleAlert className="mt-0.5 size-5 shrink-0 text-muted" />
                   )}
@@ -224,7 +224,7 @@ export default async function BillPage({ params }: { params: Promise<{ id: strin
                     Send to Xero as a bill
                   </label>
                 )}
-                {!allGood && <p className="mt-3 text-xs text-red-700">Some checks didn&apos;t pass – make sure you&apos;re happy before approving.</p>}
+                {!allGood && <p className="mt-3 text-xs text-clay">Some checks didn&apos;t pass – make sure you&apos;re happy before approving.</p>}
                 <SubmitButton className="btn-primary mt-3 w-full">Approve for payment</SubmitButton>
               </ActionForm>
               <Modal title="Query / reject invoice" trigger="Query or reject" triggerClassName="btn mt-2 w-full">

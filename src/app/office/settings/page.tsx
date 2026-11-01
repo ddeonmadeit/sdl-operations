@@ -184,7 +184,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
           <Card title="Email sending">
             {emailEnabled() ? (
               <p className="flex items-center gap-2 text-sm">
-                <CheckCircle2 className="size-4 text-green-600" /> Email is set up – quotes, agreements, variations and KPR orders send directly from the app.
+                <CheckCircle2 className="size-4 text-leaf" /> Email is set up – quotes, agreements, variations and KPR orders send directly from the app.
               </p>
             ) : (
               <p className="text-sm text-muted">
@@ -227,14 +227,14 @@ async function TeamTab({ isAdmin, meId }: { isAdmin: boolean; meId: number }) {
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2 font-medium">
                 {u.name} {u.id === meId && <span className="text-xs text-muted">(you)</span>}
-                {!u.active && <Badge tone="red">Disabled</Badge>}
+                {!u.active && <Badge tone="bad">Disabled</Badge>}
               </div>
               <div className="truncate text-xs text-muted">
                 {u.email}
                 {u.hourlyRateCents ? ` · $${(u.hourlyRateCents / 100).toFixed(2)}/h` : ""}
               </div>
             </div>
-            <Badge tone={u.role === "admin" ? "violet" : u.role === "office" ? "blue" : "gray"}>{ROLES[u.role as Role]}</Badge>
+            <Badge tone={u.role === "admin" ? "strong" : u.role === "office" ? "info" : "neutral"}>{ROLES[u.role as Role]}</Badge>
             {isAdmin && (
               <Modal title={`Edit ${u.name}`} trigger="Edit" triggerClassName="btn btn-sm">
                 <ActionForm action={updateUser.bind(null, u.id)} reset={false}>
@@ -254,11 +254,11 @@ async function XeroTab({ status, isAdmin, xeroSettings }: { status?: string; isA
   const conn = await getXeroConnection();
   const configured = xeroConfigured();
   const msg: Record<string, [string, string]> = {
-    connected: ["Xero connected.", "bg-green-50 text-green-900"],
-    denied: ["Xero connection was cancelled.", "bg-amber-50 text-amber-900"],
-    invalid: ["The Xero sign-in expired – please try again.", "bg-amber-50 text-amber-900"],
-    error: ["Couldn't connect to Xero. Check the client ID, secret and redirect URI.", "bg-red-50 text-red-900"],
-    "not-configured": ["Xero app keys aren't set on the server yet.", "bg-amber-50 text-amber-900"],
+    connected: ["Xero connected.", "bg-leaf-soft text-leaf"],
+    denied: ["Xero connection was cancelled.", "bg-clay-soft text-clay-ink"],
+    invalid: ["The Xero sign-in expired – please try again.", "bg-clay-soft text-clay-ink"],
+    error: ["Couldn't connect to Xero. Check the client ID, secret and redirect URI.", "bg-clay-soft text-clay-ink"],
+    "not-configured": ["Xero app keys aren't set on the server yet.", "bg-clay-soft text-clay-ink"],
   };
   return (
     <div className="max-w-2xl space-y-5">
@@ -281,7 +281,7 @@ async function XeroTab({ status, isAdmin, xeroSettings }: { status?: string; isA
           </div>
         ) : conn ? (
           <div className="flex flex-wrap items-center gap-3">
-            <CheckCircle2 className="size-5 text-green-600" />
+            <CheckCircle2 className="size-5 text-leaf" />
             <div className="flex-1 text-sm">
               Connected to <b>{conn.tenantName}</b>
               <div className="text-xs text-muted">since {fmtDateTime(new Date(conn.connectedAt))}</div>

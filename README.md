@@ -28,7 +28,7 @@ Supervisors can only open the site app. Admin and office users can open both.
 | Track enquiries → status → completion | **Jobs**: Leads (Enquiry, Site visit, Quoting, Quote sent), Active (Won, In progress), Completed, Lost. Each job has a status picker. |
 | Estimates and quotes | Job → **Quotes & contracts**. Line items are grouped by stage, with cost, sell, markup and margin. Clients accept and sign online. An accepted quote sets the contract value and each stage's budget, and fills in the site **scope of works**. |
 | Client contracts and subcontractor agreements | Job → **Quotes & contracts**. The template text is filled in from the job/stage, then sent for online signing. Edit templates in Settings → Templates. |
-| Schedule work, coordinate subbies, book labour | Job → **Schedule & labour**: stages with dates, subbie, budget, status and a timeline. **Schedule** shows every job over two weeks. KPR requests from site become purchase orders (PO-#) that are emailed to KPR. |
+| Schedule work, coordinate subbies, book labour | Job → **Schedule & labour**: stages with dates, subbie, budget, status and a timeline. **Send dates** emails or texts each subbie their dates, the site address, supervisor, access notes and scope, and flags when dates change after sending. **Schedule** shows every job over two weeks. KPR requests from site become purchase orders (PO-#) that are emailed to KPR. |
 | Variations: identified → priced → approved → invoiced | **Variations** (all jobs) and Job → Variations. Variations come from site, from client conversations, or from the office. Clients approve by signing online. Invoice in Xero, or record the invoice number. |
 | Check work, hours and invoices before payment | **Approvals**: invoices from KPR, subcontractors and suppliers, with automatic checks (stage signed off? scope ticked? billed vs agreement? KPR hours billed vs hours logged on site?). Also covers SDL supervisor hours (weekly timesheets), completed work to sign off, and labour requests. |
 | Costs and margins, Xero | Job → **Costs**: budget, committed, actual and waiting per stage, plus forecast margin and KPR/SDL hours. The dashboard shows margins across all active jobs. Settings → **Xero** connects the accounts. |
@@ -39,7 +39,7 @@ The **Dashboard** splits work into *incoming from site* (completed stages, new v
 
 | Need | Where |
 | --- | --- |
-| Scope, plans, schedule and contacts | Job → Scope of works (tick items off, mark a stage complete), Plans & documents, Schedule & labour, Contacts (tap to call or text). |
+| Scope, plans, schedule and contacts | Job → Scope of works (tick items off, mark a stage complete), Plans & documents, **Contracts & agreements** (what was agreed with the client and each subbie; supervisors don't see prices), Schedule & labour, Contacts (tap to call or text). |
 | Signed site inductions | Job → **Induct a worker**. The worker signs on the supervisor's phone, or scans the **Worker QR** to sign on their own. The induction register is in the office under Site diary → Inductions. |
 | Daily log | Job → **Daily log**: work completed, my hours (SDL), KPR workers and hours (prefilled from today's booking), subbies on site, weather, problems, unforeseen items and photos. Unsent text is kept on the phone. |
 | Client discussions and potential variations | **Client conversation** (one tick flags it as a variation) and **Potential variation**. |
@@ -128,6 +128,10 @@ src/lib/queries.ts    shared reads + job cost/margin calculation
 src/lib/xero.ts       Xero integration
 src/db/schema.ts      database tables
 src/app/globals.css   design tokens (colours, radius) – restyle from here
+public/brand/         SDL logo files (vector, in brand colours)
 ```
+
+## Brand
+The app uses only the four SDL brand colours: clay `#9B5D40`, dark olive `#404232`, cream `#E7DED3` and leaf olive `#5E622C`. Borders, muted text and soft backgrounds are mixes of these. They're all defined at the top of `src/app/globals.css`. App icons and the favicon are made from `public/brand/logo-mark-cream.svg` with `npm run icons`.
 
 `npm run typecheck` checks the code. `npm run db:generate` creates a migration after changing `schema.ts`.

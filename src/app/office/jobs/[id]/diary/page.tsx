@@ -20,6 +20,7 @@ const FILTERS = [
   ["issue", "Issues"],
   ["unforeseen", "Unforeseen"],
   ["photo", "Photos"],
+  ["done", "Completed work"],
   ["induction", "Inductions"],
 ] as const;
 
@@ -40,7 +41,7 @@ export default async function DiaryPage({ params, searchParams }: { params: Prom
               key={k}
               href={k ? `${base}?f=${k}` : base}
               scroll={false}
-              className={cx("shrink-0 rounded-full border px-3 py-1.5 text-sm font-medium", f === k ? "border-ink bg-ink text-white" : "border-line-strong bg-surface hover:bg-subtle")}
+              className={cx("shrink-0 rounded-full border px-3 py-1.5 text-sm font-medium", f === k ? "border-ink bg-ink text-cream" : "border-line-strong bg-surface hover:bg-subtle")}
             >
               {label}
             </Link>

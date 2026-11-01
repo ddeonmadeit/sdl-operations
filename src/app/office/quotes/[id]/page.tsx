@@ -70,7 +70,7 @@ export default async function QuotePage({ params }: { params: Promise<{ id: stri
       />
 
       {accepted && (
-        <div className="mb-5 rounded-xl bg-green-50 p-4 text-sm text-green-900">
+        <div className="mb-5 rounded-xl bg-leaf-soft p-4 text-sm text-leaf">
           This quote is accepted. It set the job&apos;s contract value, stage budgets and the site scope of works. To change pricing now, raise a variation.
         </div>
       )}

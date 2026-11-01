@@ -64,7 +64,7 @@ export default async function FilesPage({ params }: { params: Promise<{ id: stri
                     {kb(f.size)} · {by} · {fmtDate(f.createdAt.toISOString())}
                   </div>
                 </a>
-                <Badge tone={f.category === "plan" ? "blue" : "gray"}>{f.category === "plan" ? "Plan" : "Document"}</Badge>
+                <Badge tone={f.category === "plan" ? "info" : "neutral"}>{f.category === "plan" ? "Plan" : "Document"}</Badge>
                 <ActionButton action={deleteJobFile.bind(null, f.id)} confirm={`Delete ${f.name}?`} className="btn-ghost btn-icon btn-sm" title="Delete">
                   <Trash2 className="size-4 text-muted" />
                 </ActionButton>

@@ -2,7 +2,7 @@
 
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
-import { contracts, jobs, labourBookings, quotes, variations } from "@/db/schema";
+import { contracts, jobs, labourBookings, quotes, stages, variations } from "@/db/schema";
 import { logActivity } from "@/lib/activity";
 import { requireOffice } from "@/lib/auth";
 import { emailEnabled, sendEmail } from "@/lib/email";
@@ -57,6 +57,12 @@ export async function sendDoc(kind: DocKind, id: number, fd: FormData): Promise<
       jobId = v.jobId;
       label = `Variation V${v.number}`;
     }
+  } else if (kind === "stage") {
+    const [st] = await db.update(stages).set({ notifiedAt: now }).where(eq(stages.id, id)).returning();
+    if (st) {
+      jobId = st.jobId;
+      label = `${st.name} dates`;
+    }
   } else if (kind === "booking") {
     const [b] = await db
       .update(labourBookings)
@@ -76,5 +82,5 @@ export async function sendDoc(kind: DocKind, id: number, fd: FormData): Promise<
     message: kind === "booking" ? `${label} confirmed${emailed ? ` – order emailed to ${to}` : ""}` : `${label} sent${emailed ? ` to ${to}` : ""}`,
   });
   refresh();
-  return { ok: true, message: emailed ? `Emailed to ${to}` : kind === "booking" ? "Marked as booked" : "Marked as sent" };
+  return { ok: true, message: emailed ? `Emailed to ${to}` : kind === "booking" ? "Marked as booked" : kind === "stage" ? "Marked as sent to subbie" : "Marked as sent" };
 }

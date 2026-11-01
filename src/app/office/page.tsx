@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { and, asc, desc, eq, gte, inArray, isNull, lte, or } from "drizzle-orm";
-import { AlertTriangle, CheckCircle2, ChevronRight, FilePen, HardHat, Receipt, Timer } from "lucide-react";
+import { AlertTriangle, CheckCircle2, ChevronRight, FilePen, HardHat, ListChecks, Receipt, Timer } from "lucide-react";
 import { ActivityFeed, AddTaskButton, TaskList } from "@/components/shared";
 import { Card, cx, EmptyState, ProgressBar, Stat } from "@/components/ui";
 import { db } from "@/db";
-import { activity, bills, contacts, entries, jobs, labourBookings, labourEntries, stages, tasks, users, variations } from "@/db/schema";
+import { activity, bills, contacts, entries, jobs, labourBookings, labourEntries, scopeItems, stages, tasks, users, variations } from "@/db/schema";
 import { requireOffice } from "@/lib/auth";
 import { ACTIVE_STATUSES, BILL_KINDS, LEAD_STATUSES } from "@/lib/constants";
 import { addDays, fmtDate, money, moneyShort, pct, relDay, timeAgo, today, weekStart } from "@/lib/format";
@@ -100,12 +100,24 @@ export default async function Dashboard() {
       db.select().from(variations).where(inArray(variations.status, ["priced", "submitted"])),
     ]);
 
+  // Whiteboard "incoming: complete task (SOW)" – scope items ticked off on site in the last 2 days, per job.
+  const doneScope = await db
+    .select({ jobId: scopeItems.jobId, job: jobs.name, description: scopeItems.description, doneAt: scopeItems.doneAt })
+    .from(scopeItems)
+    .innerJoin(jobs, eq(jobs.id, scopeItems.jobId))
+    .where(gte(scopeItems.doneAt, new Date(Date.now() - 48 * 3600_000)))
+    .orderBy(desc(scopeItems.doneAt));
+  const doneByJob = [...new Set(doneScope.map((d) => d.jobId))].map((jobId) => {
+    const items = doneScope.filter((d) => d.jobId === jobId);
+    return { jobId, job: items[0]!.job, items, latest: items[0]!.doneAt! };
+  });
+
   const active = allJobs.filter((j) => ACTIVE_STATUSES.includes(j.status as never));
   const leads = allJobs.filter((j) => LEAD_STATUSES.includes(j.status as never));
   const fins = await Promise.all(active.map(async (j) => ({ job: j, fin: await jobFinance(j.id), stages: await db.select({ status: stages.status, name: stages.name }).from(stages).where(eq(stages.jobId, j.id)).orderBy(asc(stages.sortOrder)) })));
   const billTotal = pendingBills.reduce((s, r) => s + r.b.amountCents, 0);
   const sdlHours = sdlPending.reduce((s, r) => s + r.hours, 0);
-  const incomingCount = completeStages.length + newVars.length + openIssues.length + kprReqs.length;
+  const incomingCount = completeStages.length + newVars.length + openIssues.length + kprReqs.length + doneByJob.length;
   const hour = Number(new Intl.DateTimeFormat("en-AU", { hour: "numeric", hourCycle: "h23", timeZone: process.env.APP_TIMEZONE || "Australia/Sydney" }).format(new Date()));
 
   return (
@@ -137,25 +149,37 @@ export default async function Dashboard() {
           ) : (
             <ul className="divide-y divide-line">
               {completeStages.map(({ s, job }) => (
-                <InboxRow key={`s${s.id}`} href="/office/approvals?tab=work" icon={<CheckCircle2 className="size-5 text-amber-600" />} title={`${s.name} complete – check work`} meta={`${job} · ${s.completedAt ? timeAgo(s.completedAt) : ""}`} />
+                <InboxRow key={`s${s.id}`} href="/office/approvals?tab=work" icon={<CheckCircle2 className="size-5 text-clay" />} title={`${s.name} complete – check work`} meta={`${job} · ${s.completedAt ? timeAgo(s.completedAt) : ""}`} />
               ))}
               {newVars.map(({ v, job }) => (
-                <InboxRow key={`v${v.id}`} href={`/office/jobs/${v.jobId}/variations`} icon={<FilePen className="size-5 text-violet-600" />} title={`New variation: ${v.title}`} meta={`${job} · needs pricing · ${timeAgo(v.createdAt)}`} />
+                <InboxRow key={`v${v.id}`} href={`/office/jobs/${v.jobId}/variations`} icon={<FilePen className="size-5 text-leaf" />} title={`New variation: ${v.title}`} meta={`${job} · needs pricing · ${timeAgo(v.createdAt)}`} />
               ))}
               {openIssues.map(({ e, job, author }) => (
                 <InboxRow
                   key={`e${e.id}`}
                   href={`/office/jobs/${e.jobId}`}
-                  icon={<AlertTriangle className={cx("size-5", e.type === "issue" ? "text-red-600" : "text-amber-600")} />}
+                  icon={<AlertTriangle className={cx("size-5", e.type === "issue" ? "text-clay" : "text-clay")} />}
                   title={e.body.length > 90 ? `${e.body.slice(0, 90)}…` : e.body}
                   meta={`${e.type === "issue" ? "Problem" : "Unforeseen"} · ${job} · ${author ?? ""} · ${timeAgo(e.createdAt)}`}
+                />
+              ))}
+              {doneByJob.map((d) => (
+                <InboxRow
+                  key={`d${d.jobId}`}
+                  href={`/office/jobs/${d.jobId}/scope`}
+                  icon={<ListChecks className="size-5 text-leaf" />}
+                  title={`${d.items.length} scope item${d.items.length > 1 ? "s" : ""} completed: ${d.items
+                    .slice(0, 2)
+                    .map((i) => i.description)
+                    .join(", ")}${d.items.length > 2 ? "…" : ""}`}
+                  meta={`${d.job} · ${timeAgo(d.latest)}`}
                 />
               ))}
               {kprReqs.map(({ b, job }) => (
                 <InboxRow
                   key={`b${b.id}`}
                   href="/office/approvals?tab=labour"
-                  icon={<HardHat className="size-5 text-amber-600" />}
+                  icon={<HardHat className="size-5 text-clay" />}
                   title={`KPR labour request: ${b.workers} × ${relDay(b.date)}${b.days > 1 ? ` (${b.days} days)` : ""}`}
                   meta={`${job} · book with KPR`}
                 />
@@ -172,7 +196,7 @@ export default async function Dashboard() {
                 <InboxRow
                   key={k}
                   href="/office/approvals"
-                  icon={<Receipt className={cx("size-5", list.length ? "text-blue-600" : "text-muted")} />}
+                  icon={<Receipt className={cx("size-5", list.length ? "text-ink" : "text-muted")} />}
                   title={BILL_KINDS[k]}
                   meta={list.length ? `${list.length} invoice${list.length > 1 ? "s" : ""} · ${money(list.reduce((s, r) => s + r.b.amountCents, 0), true)}` : "Nothing waiting"}
                 />
@@ -180,7 +204,7 @@ export default async function Dashboard() {
             })}
             <InboxRow
               href="/office/approvals?tab=hours"
-              icon={<Timer className={cx("size-5", sdlHours ? "text-violet-600" : "text-muted")} />}
+              icon={<Timer className={cx("size-5", sdlHours ? "text-leaf" : "text-muted")} />}
               title="SDL supervisor hours"
               meta={sdlHours ? `${sdlHours}h waiting approval` : "All approved"}
             />
@@ -201,7 +225,7 @@ export default async function Dashboard() {
             <ul className="divide-y divide-line">
               {weekStages.map(({ s, job, contact }) => (
                 <li key={`s${s.id}`} className="flex items-center gap-3 px-4 py-2.5">
-                  <span className={cx("h-8 w-1 shrink-0 rounded-full", s.status === "in_progress" ? "bg-blue-600" : "bg-line-strong")} />
+                  <span className={cx("h-8 w-1 shrink-0 rounded-full", s.status === "in_progress" ? "bg-olive" : "bg-line-strong")} />
                   <div className="min-w-0 flex-1">
                     <div className="truncate text-sm font-medium">
                       {s.name} · {job}
@@ -217,7 +241,7 @@ export default async function Dashboard() {
                 .filter((r) => addDays(r.b.date, r.b.days - 1) >= t0)
                 .map(({ b, job }) => (
                   <li key={`b${b.id}`} className="flex items-center gap-3 px-4 py-2.5">
-                    <span className="h-8 w-1 shrink-0 rounded-full bg-amber-500" />
+                    <span className="h-8 w-1 shrink-0 rounded-full bg-clay" />
                     <div className="min-w-0 flex-1">
                       <div className="truncate text-sm font-medium">
                         KPR · {b.workers} worker{b.workers > 1 ? "s" : ""} · {job}
@@ -265,7 +289,7 @@ export default async function Dashboard() {
                         </td>
                         <td className="px-3 py-2.5 text-right tabular-nums">{money(fin.revenue, true)}</td>
                         <td className="px-3 py-2.5 text-right tabular-nums">{money(fin.actual, true)}</td>
-                        <td className={cx("px-4 py-2.5 text-right font-semibold tabular-nums", fin.forecastMarginPct < 10 ? "text-red-700" : "text-green-700")}>
+                        <td className={cx("px-4 py-2.5 text-right font-semibold tabular-nums", fin.forecastMarginPct < 10 ? "text-clay" : "text-leaf")}>
                           {fin.revenue ? pct(fin.forecastMarginPct) : "–"}
                         </td>
                       </tr>
@@ -291,7 +315,7 @@ function InboxRow({ href, icon, title, meta }: { href: string; icon: React.React
       <Link href={href} className="flex items-center gap-3 px-4 py-3 transition hover:bg-subtle">
         <span className="shrink-0">{icon}</span>
         <span className="min-w-0 flex-1">
-          <span className="block truncate text-sm font-medium">{title}</span>
+          <span className="line-clamp-2 text-sm font-medium">{title}</span>
           <span className="block truncate text-xs text-muted">{meta}</span>
         </span>
         <ChevronRight className="size-4 shrink-0 text-muted" />

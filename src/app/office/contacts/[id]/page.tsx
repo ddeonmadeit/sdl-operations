@@ -60,7 +60,7 @@ export default async function ContactPage({ params }: { params: Promise<{ id: st
         }
       />
       <div className="grid gap-5 lg:grid-cols-[1fr_360px]">
-        <div className="space-y-5">
+        <div className="min-w-0 space-y-5">
           <Card title="Jobs" pad={false}>
             {jobRows.length === 0 ? (
               <p className="px-4 py-4 text-sm text-muted">Not linked to any jobs yet.</p>

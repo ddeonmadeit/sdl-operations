@@ -1,5 +1,6 @@
 import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
+import { Logo } from "@/components/brand";
 import { InductionForm } from "@/components/induction-form";
 import { db } from "@/db";
 import { contacts, jobs } from "@/db/schema";
@@ -20,7 +21,8 @@ export default async function SelfInductionPage({ params }: { params: Promise<{ 
   return (
     <main className="safe-top mx-auto max-w-lg px-4 py-6">
       <div className="mb-5">
-        <div className="text-sm font-semibold text-accent">{company.name}</div>
+        <Logo className="mb-4 w-36" />
+        <div className="sr-only">{company.name}</div>
         <h1 className="text-2xl font-bold tracking-tight">Site induction</h1>
         <p className="text-sm text-muted">{job.siteAddress ?? job.name}</p>
       </div>

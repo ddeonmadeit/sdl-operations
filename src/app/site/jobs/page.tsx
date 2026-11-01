@@ -24,7 +24,7 @@ export default async function SiteJobs() {
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
                   <span className="truncate font-semibold">{j.name}</span>
-                  {j.mine && <Badge tone="green">Mine</Badge>}
+                  {j.mine && <Badge tone="good">Mine</Badge>}
                 </div>
                 {j.siteAddress && (
                   <div className="mt-0.5 flex items-center gap-1 truncate text-sm text-muted">

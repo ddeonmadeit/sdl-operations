@@ -28,12 +28,12 @@ export function ActionTile({ href, icon, label, tone = "default", done }: { href
       href={href}
       className={cx(
         "relative flex flex-col items-start gap-2 rounded-2xl border p-3.5 transition active:scale-[0.97]",
-        tone === "primary" ? "border-accent bg-accent text-white" : tone === "warn" ? "border-red-200 bg-red-50 text-red-900" : "border-line bg-surface",
+        tone === "primary" ? "border-accent bg-accent text-cream" : tone === "warn" ? "border-clay/40 bg-clay-soft text-clay-ink" : "border-line bg-surface",
       )}
     >
-      <span className={cx("grid size-9 place-items-center rounded-xl", tone === "primary" ? "bg-white/15" : tone === "warn" ? "bg-red-100" : "bg-subtle")}>{icon}</span>
+      <span className={cx("grid size-9 place-items-center rounded-xl", tone === "primary" ? "bg-cream/15" : tone === "warn" ? "bg-clay/15" : "bg-subtle")}>{icon}</span>
       <span className="text-sm leading-tight font-semibold">{label}</span>
-      {done && <span className="absolute top-2.5 right-2.5 rounded-full bg-white/90 px-1.5 text-[0.65rem] font-bold text-green-700">✓ Done</span>}
+      {done && <span className="absolute top-2.5 right-2.5 rounded-full bg-cream px-1.5 text-[0.65rem] font-bold text-leaf">✓ Done</span>}
     </Link>
   );
 }

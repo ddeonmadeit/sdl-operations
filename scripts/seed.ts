@@ -148,6 +148,7 @@ async function demo() {
         budgetCents: budgets[i]!,
         completedAt: ["signed_off", "complete"].includes(statuses[i]!) ? hoursAgo(24 * (20 - i * 2)) : null,
         signedOffAt: statuses[i] === "signed_off" ? hoursAgo(24 * (19 - i * 2)) : null,
+        notifiedAt: t[1] === "subcontractor" && i <= 5 ? hoursAgo(24 * (30 - i)) : null,
       })),
     )
     .returning();

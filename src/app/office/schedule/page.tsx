@@ -5,6 +5,7 @@ import { cx, EmptyState, PageHeader } from "@/components/ui";
 import { db } from "@/db";
 import { contacts, jobs, labourBookings, stages } from "@/db/schema";
 import { requireOffice } from "@/lib/auth";
+import { stageBarClass } from "@/lib/constants";
 import { addDays, daysBetween, fmtDate, today, weekStart } from "@/lib/format";
 
 export const metadata = { title: "Schedule" };
@@ -91,8 +92,8 @@ export default async function SchedulePage({ searchParams }: { searchParams: Pro
                       <div
                         key={`s${s.id}`}
                         className={cx(
-                          "mx-0.5 my-1 truncate rounded px-2 py-1 text-[0.7rem] font-semibold text-white",
-                          s.status === "signed_off" ? "bg-green-600" : s.status === "complete" ? "bg-amber-500" : s.status === "in_progress" ? "bg-blue-600" : s.kind === "sdl" ? "bg-violet-500" : "bg-slate-400",
+                          "mx-0.5 my-1 truncate rounded px-2 py-1 text-[0.7rem] font-semibold",
+                          stageBarClass(s.status, s.kind),
                         )}
                         style={{ gridRow: i + 1, gridColumn: `${col(s.startDate!) + 2} / ${col(s.endDate ?? s.startDate!) + 3}` }}
                         title={`${s.name}${contact ? ` – ${contact}` : ""}`}
@@ -106,7 +107,7 @@ export default async function SchedulePage({ searchParams }: { searchParams: Pro
                         key={`b${b.id}`}
                         className={cx(
                           "mx-0.5 my-1 truncate rounded border px-2 py-1 text-[0.7rem] font-semibold",
-                          b.status === "booked" ? "border-amber-400 bg-amber-50 text-amber-900" : "border-dashed border-amber-500 bg-white text-amber-800",
+                          b.status === "booked" ? "border-clay bg-clay-soft text-clay-ink" : "border-dashed border-clay bg-surface text-clay-ink",
                         )}
                         style={{ gridRow: st.length + i + 1, gridColumn: `${col(b.date) + 2} / ${col(addDays(b.date, b.days - 1)) + 3}` }}
                         title={b.task ?? ""}
@@ -124,11 +125,11 @@ export default async function SchedulePage({ searchParams }: { searchParams: Pro
       )}
       <div className="mt-3 flex flex-wrap gap-3 text-xs text-muted">
         {[
-          ["bg-slate-400", "Subcontractor – not started"],
-          ["bg-violet-500", "SDL + KPR"],
-          ["bg-blue-600", "In progress"],
-          ["bg-amber-500", "Complete – to check"],
-          ["bg-green-600", "Signed off"],
+          ["bg-line-strong", "Subcontractor – not started"],
+          ["bg-leaf-mid", "SDL + KPR"],
+          ["bg-olive", "In progress"],
+          ["bg-clay", "Complete – to check"],
+          ["bg-leaf", "Signed off"],
         ].map(([c, l]) => (
           <span key={l} className="inline-flex items-center gap-1.5">
             <span className={cx("size-2.5 rounded-sm", c)} /> {l}

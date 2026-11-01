@@ -28,7 +28,7 @@ export function NoteForm({
             {types.map((t) => (
               <label
                 key={t}
-                className="cursor-pointer rounded-full border border-line-strong px-3 py-1.5 text-sm font-medium has-[:checked]:border-accent has-[:checked]:bg-accent has-[:checked]:text-white"
+                className="cursor-pointer rounded-full border border-line-strong px-3 py-1.5 text-sm font-medium has-[:checked]:border-accent has-[:checked]:bg-accent has-[:checked]:text-cream"
               >
                 <input type="radio" name="type" value={t} defaultChecked={t === defaultType} className="sr-only" />
                 {ENTRY_TYPES[t].label}

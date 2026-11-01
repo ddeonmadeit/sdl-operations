@@ -15,6 +15,13 @@
       "when": 1793337920468,
       "tag": "0001_file_blobs",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793506889856,
+      "tag": "0002_stage_notified",
+      "breakpoints": true
     }
   ]
 }

@@ -32,7 +32,7 @@ export default async function SiteSchedule({ params }: { params: Promise<{ id: s
                 <span
                   className={cx(
                     "size-2.5 shrink-0 rounded-full",
-                    s.status === "signed_off" ? "bg-green-600" : s.status === "complete" ? "bg-amber-500" : s.status === "in_progress" ? "bg-blue-600" : "bg-line-strong",
+                    s.status === "signed_off" ? "bg-leaf" : s.status === "complete" ? "bg-clay" : s.status === "in_progress" ? "bg-olive" : "bg-line-strong",
                   )}
                 />
                 <div className="min-w-0 flex-1">

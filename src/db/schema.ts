@@ -111,6 +111,7 @@ export const stages = pgTable(
     completedById: integer("completed_by_id").references(() => users.id, { onDelete: "set null" }),
     signedOffAt: ts("signed_off_at"),
     signedOffById: integer("signed_off_by_id").references(() => users.id, { onDelete: "set null" }),
+    notifiedAt: ts("notified_at"), // dates sent to the subcontractor
   },
   (t) => [index("stages_job_idx").on(t.jobId)],
 );

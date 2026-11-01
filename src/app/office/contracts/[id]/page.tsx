@@ -67,20 +67,20 @@ export default async function ContractPage({ params }: { params: Promise<{ id: s
       />
 
       {signed && (
-        <div className="mb-5 flex flex-wrap items-center gap-4 rounded-xl bg-green-50 p-4 text-sm text-green-900">
+        <div className="mb-5 flex flex-wrap items-center gap-4 rounded-xl bg-leaf-soft p-4 text-sm text-leaf">
           <div className="flex-1">
             Signed{c.signedName ? ` by ${c.signedName}` : ""} {c.signedAt ? `on ${fmtDateTime(c.signedAt)}` : ""}.
           </div>
           {c.signatureData && c.signatureData.length > 100 && (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={c.signatureData} alt="Signature" className="h-14 rounded bg-white px-2" />
+            <img src={c.signatureData} alt="Signature" className="h-14 rounded bg-surface px-2" />
           )}
         </div>
       )}
 
       <ActionForm action={updateContract.bind(null, c.id)} reset={false}>
         <fieldset disabled={signed} className="grid gap-5 lg:grid-cols-[1fr_320px]">
-          <div className="space-y-5">
+          <div className="min-w-0 space-y-5">
             <Card>
               <div className="space-y-3">
                 <label className="block">

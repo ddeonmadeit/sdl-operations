@@ -7,7 +7,7 @@ export function cx(...c: (string | false | null | undefined)[]) {
   return c.filter(Boolean).join(" ");
 }
 
-export function Badge({ tone = "gray", children, className }: { tone?: Tone; children: React.ReactNode; className?: string }) {
+export function Badge({ tone = "neutral", children, className }: { tone?: Tone; children: React.ReactNode; className?: string }) {
   return <span className={cx("badge", `tone-${tone}`, className)}>{children}</span>;
 }
 
@@ -18,7 +18,7 @@ export function StatusBadge<T extends Record<string, { label: string; tone: Tone
   map: T;
   value: string;
 }) {
-  const def = map[value] ?? { label: value, tone: "gray" as Tone };
+  const def = map[value] ?? { label: value, tone: "neutral" as Tone };
   return <Badge tone={def.tone}>{def.label}</Badge>;
 }
 
@@ -100,9 +100,9 @@ export function Stat({ label, value, sub, href, tone }: {
       <div
         className={cx(
           "mt-1 text-2xl font-bold tracking-tight tabular-nums",
-          tone === "warn" && "text-amber-700",
-          tone === "good" && "text-green-700",
-          tone === "bad" && "text-red-700",
+          tone === "warn" && "text-clay",
+          tone === "good" && "text-leaf",
+          tone === "bad" && "text-clay",
         )}
       >
         {value}
@@ -174,7 +174,7 @@ export function Tabs({ tabs, current }: { tabs: { href: string; label: string; c
           >
             {t.label}
             {t.count ? (
-              <span className={cx("rounded-full px-1.5 text-[0.7rem] font-semibold", active ? "bg-accent text-white" : "bg-subtle")}>
+              <span className={cx("rounded-full px-1.5 text-[0.7rem] font-semibold", active ? "bg-accent text-cream" : "bg-subtle")}>
                 {t.count}
               </span>
             ) : null}

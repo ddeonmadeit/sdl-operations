@@ -45,15 +45,15 @@ export function Toaster() {
     () => toasts,
   );
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-[calc(5.5rem+env(safe-area-inset-bottom))] z-[100] flex flex-col items-center gap-2 px-4 lg:bottom-6">
+    <div className="pointer-events-none fixed inset-x-0 top-[calc(env(safe-area-inset-top)+0.75rem)] z-[100] flex flex-col items-center gap-2 px-4">
       {items.map((t) => (
         <div
           key={t.id}
           className={cx(
-            "pointer-events-auto flex max-w-md items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium text-white shadow-[var(--shadow-pop)]",
-            t.kind === "error" ? "bg-red-700" : "bg-ink",
+            "pointer-events-auto flex max-w-md items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium text-cream shadow-[var(--shadow-pop)]",
+            t.kind === "error" ? "bg-clay-ink" : "bg-ink",
           )}
-          style={{ animation: "toast-in .18s ease-out" }}
+          style={{ animation: "toast-in .2s cubic-bezier(.2,.9,.3,1)" }}
           role="status"
         >
           {t.kind === "error" ? <X className="size-4 shrink-0" /> : <Check className="size-4 shrink-0" />}
@@ -68,7 +68,7 @@ export function OfflineBanner() {
   const offline = useOffline();
   if (!offline) return null;
   return (
-    <div role="status" className="safe-top fixed inset-x-0 top-0 z-[90] bg-amber-500 px-4 py-1.5 text-center text-xs font-semibold text-amber-950">
+    <div role="status" className="safe-top fixed inset-x-0 top-0 z-[90] bg-clay px-4 py-1.5 text-center text-xs font-semibold text-cream">
       No signal – anything you save will send automatically when you&apos;re back online.
     </div>
   );
@@ -299,7 +299,7 @@ export function CheckRow({
       <span
         className={cx(
           "mt-0.5 grid size-5 shrink-0 place-items-center rounded-md border-2 transition",
-          optimistic ? "border-accent bg-accent text-white" : "border-line-strong bg-surface",
+          optimistic ? "border-accent bg-accent text-cream" : "border-line-strong bg-surface",
         )}
       >
         {optimistic && <Check className="size-3.5" strokeWidth={3} />}
@@ -487,15 +487,15 @@ export function Uploader({
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={i.preview} alt="" className="size-full object-cover" />
               {!i.id && !i.error && (
-                <div className="absolute inset-0 grid place-items-center bg-black/30">
-                  <Loader2 className="size-5 animate-spin text-white" />
+                <div className="absolute inset-0 grid place-items-center bg-olive/40">
+                  <Loader2 className="size-5 animate-spin text-cream" />
                 </div>
               )}
-              {i.error && <div className="absolute inset-0 grid place-items-center bg-red-700/60 text-xs font-semibold text-white">Failed</div>}
+              {i.error && <div className="absolute inset-0 grid place-items-center bg-clay-ink/85 text-xs font-semibold text-cream">Failed</div>}
               <button
                 type="button"
                 onClick={() => setItems((s) => s.filter((x) => x.key !== i.key))}
-                className="absolute top-1 right-1 grid size-6 place-items-center rounded-full bg-black/55 text-white"
+                className="absolute top-1 right-1 grid size-6 place-items-center rounded-full bg-olive/70 text-cream"
                 aria-label="Remove"
               >
                 <X className="size-3.5" />
@@ -504,7 +504,7 @@ export function Uploader({
           ) : (
             <div key={i.key} className="flex items-center gap-2 rounded-lg border border-line px-3 py-2 text-sm">
               {!i.id && !i.error ? <Loader2 className="size-4 animate-spin text-muted" /> : <Paperclip className="size-4 text-muted" />}
-              <span className={cx("min-w-0 flex-1 truncate", i.error && "text-red-700")}>{i.name}</span>
+              <span className={cx("min-w-0 flex-1 truncate", i.error && "text-clay")}>{i.name}</span>
               <button type="button" onClick={() => setItems((s) => s.filter((x) => x.key !== i.key))} aria-label="Remove">
                 <Trash2 className="size-4 text-muted" />
               </button>
@@ -549,7 +549,7 @@ export function SignaturePad({ name = "signature", height = 170 }: { name?: stri
     ctx.lineWidth = 2.2;
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
-    ctx.strokeStyle = "#111";
+    ctx.strokeStyle = "#404232";
     setEmpty(true);
     if (inputRef.current) inputRef.current.value = "";
   }, [height]);
@@ -558,7 +558,19 @@ export function SignaturePad({ name = "signature", height = 170 }: { name?: stri
     setup();
     const form = canvasRef.current?.closest("form");
     form?.addEventListener("sdl:reset", setup);
-    return () => form?.removeEventListener("sdl:reset", setup);
+    let width = canvasRef.current?.offsetWidth ?? 0;
+    const onResize = () => {
+      const w = canvasRef.current?.offsetWidth ?? 0;
+      if (w !== width) {
+        width = w;
+        setup();
+      }
+    };
+    window.addEventListener("resize", onResize);
+    return () => {
+      form?.removeEventListener("sdl:reset", setup);
+      window.removeEventListener("resize", onResize);
+    };
   }, [setup]);
 
   const pos = (e: React.PointerEvent) => {
@@ -568,7 +580,7 @@ export function SignaturePad({ name = "signature", height = 170 }: { name?: stri
 
   return (
     <div>
-      <div className="relative overflow-hidden rounded-xl border border-line-strong bg-white">
+      <div className="relative overflow-hidden rounded-xl border border-line-strong bg-surface">
         <canvas
           ref={canvasRef}
           style={{ height, touchAction: "none" }}
@@ -580,7 +592,7 @@ export function SignaturePad({ name = "signature", height = 170 }: { name?: stri
             const ctx = canvasRef.current!.getContext("2d")!;
             ctx.beginPath();
             ctx.arc(last.current.x, last.current.y, 1.1, 0, Math.PI * 2);
-            ctx.fillStyle = "#111";
+            ctx.fillStyle = "#404232";
             ctx.fill();
           }}
           onPointerMove={(e) => {

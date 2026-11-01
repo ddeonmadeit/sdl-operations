@@ -1,27 +1,47 @@
 @import "tailwindcss";
 
 /*
-  Design tokens. Change these to restyle the whole app.
+  SDL Creations brand – the ONLY four colours used in the app:
+    clay #9B5D40 · dark olive #404232 · cream #E7DED3 · leaf olive #5E622C
+  Every other token below is a mix of these (lighter/darker shades of the same colours).
 */
 @theme {
   --font-sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 
-  --color-bg: #f5f6f4;
-  --color-surface: #ffffff;
-  --color-subtle: #f0f2ef;
-  --color-line: #e3e6e1;
-  --color-line-strong: #cfd4cc;
-  --color-ink: #18211c;
-  --color-ink-2: #3b4640;
-  --color-muted: #6b756f;
-  --color-accent: #1f5c3d;
-  --color-accent-hover: #184a31;
-  --color-accent-soft: #e6f0ea;
-  --color-danger: #b42318;
+  /* Brand */
+  --color-clay: #9b5d40;
+  --color-olive: #404232;
+  --color-cream: #e7ded3;
+  --color-leaf: #5e622c;
+
+  /* Surfaces */
+  --color-bg: #e7ded3; /* cream */
+  --color-surface: #f4f0eb; /* light cream */
+  --color-subtle: #ece5dd; /* cream, for hovers and fills on cards */
+  --color-line: #d0c8bc; /* olive 14% into cream */
+  --color-line-strong: #bcb5a9; /* olive 26% into cream */
+
+  /* Text */
+  --color-ink: #404232; /* dark olive */
+  --color-ink-2: #59594a;
+  --color-muted: #616152;
+  --color-placeholder: #9c988b;
+  --color-on-dark: #e7ded3; /* cream text on olive / clay */
+
+  /* Roles */
+  --color-accent: #404232; /* primary buttons, active states */
+  --color-accent-hover: #5e622c; /* leaf */
+  --color-accent-soft: #e5e2d8; /* leaf 10% into light cream */
+  --color-leaf-soft: #dad8cb; /* leaf 16% – done / approved */
+  --color-clay-soft: #e5d7ce; /* clay 16% – needs attention */
+  --color-clay-ink: #80553c; /* clay deepened with olive – small text on clay-soft, solid "problem" pills */
+  --color-olive-soft: #dedbd5; /* olive 12% */
+  --color-leaf-mid: #a9a688; /* leaf 45% into cream – SDL + KPR stages on timelines */
+  --color-danger: #9b5d40;
 
   --radius-card: 14px;
-  --shadow-card: 0 1px 2px rgb(16 24 20 / 0.04), 0 1px 1px rgb(16 24 20 / 0.03);
-  --shadow-pop: 0 10px 30px -10px rgb(16 24 20 / 0.25), 0 2px 6px rgb(16 24 20 / 0.06);
+  --shadow-card: 0 1px 2px rgb(64 66 50 / 0.06), 0 1px 1px rgb(64 66 50 / 0.04);
+  --shadow-pop: 0 12px 32px -12px rgb(64 66 50 / 0.35), 0 2px 6px rgb(64 66 50 / 0.08);
 }
 
 @layer base {
@@ -37,7 +57,7 @@
     -webkit-font-smoothing: antialiased;
   }
   ::selection {
-    background: var(--color-accent-soft);
+    background: var(--color-leaf-soft);
   }
   /* iOS zooms into inputs under 16px – keep inputs at 16px on touch screens */
   @media (pointer: coarse) {
@@ -98,7 +118,7 @@
   .btn-primary {
     background: var(--color-accent);
     border-color: var(--color-accent);
-    color: #fff;
+    color: var(--color-on-dark);
   }
   .btn-primary:hover {
     background: var(--color-accent-hover);
@@ -114,7 +134,7 @@
     color: var(--color-danger);
   }
   .btn-danger:hover {
-    background: #fdf0ef;
+    background: var(--color-clay-soft);
   }
   .btn-sm {
     height: 2rem;
@@ -145,7 +165,7 @@
     transition: border-color 0.15s, box-shadow 0.15s;
   }
   .input::placeholder {
-    color: #9aa29c;
+    color: var(--color-placeholder);
   }
   .input:focus {
     outline: none;
@@ -159,10 +179,24 @@
     line-height: 1.45;
     resize: vertical;
   }
+  /* iOS renders date/time inputs taller and centred – keep them in line with other fields */
+  input[type="date"].input,
+  input[type="time"].input {
+    -webkit-appearance: none;
+    appearance: none;
+    display: flex;
+    align-items: center;
+    min-width: 0;
+  }
+  input[type="date"].input::-webkit-date-and-time-value,
+  input[type="time"].input::-webkit-date-and-time-value {
+    text-align: left;
+    margin: 0;
+  }
   select.input {
     appearance: none;
     padding-right: 2.25rem;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b756f' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23616152' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 0.7rem center;
   }
@@ -196,29 +230,31 @@
     font-weight: 600;
     white-space: nowrap;
   }
-  .tone-gray {
-    background: #eef0ed;
-    color: #4b544e;
+  /* Status pills – brand colours only */
+  .tone-neutral {
+    background: var(--color-subtle);
+    color: var(--color-ink-2);
+    box-shadow: inset 0 0 0 1px var(--color-line);
   }
-  .tone-blue {
-    background: #e7effc;
-    color: #1d4fa8;
+  .tone-info {
+    background: var(--color-olive-soft);
+    color: var(--color-ink);
   }
-  .tone-amber {
-    background: #fdf2dc;
-    color: #8a5a00;
+  .tone-warn {
+    background: var(--color-clay-soft);
+    color: var(--color-clay-ink);
   }
-  .tone-green {
-    background: #e3f3e8;
-    color: #1c6a3a;
+  .tone-good {
+    background: var(--color-leaf-soft);
+    color: var(--color-leaf);
   }
-  .tone-red {
-    background: #fde9e7;
-    color: #a3261b;
+  .tone-bad {
+    background: var(--color-clay-ink);
+    color: var(--color-on-dark);
   }
-  .tone-violet {
-    background: #efeafb;
-    color: #5b3cb0;
+  .tone-strong {
+    background: var(--color-olive);
+    color: var(--color-on-dark);
   }
 
   .tabbar a[aria-current="page"],
@@ -275,7 +311,7 @@ dialog.sheet {
   box-shadow: var(--shadow-pop);
 }
 dialog.sheet::backdrop {
-  background: rgb(16 24 20 / 0.4);
+  background: rgb(64 66 50 / 0.45);
 }
 dialog.sheet[open] {
   animation: sheet-up 0.22s cubic-bezier(0.2, 0.9, 0.3, 1);
@@ -311,6 +347,27 @@ dialog.sheet[open] {
     opacity: 1;
   }
 }
+/* Screen change */
+.page-enter {
+  animation: page-in 0.2s cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .page-enter,
+  dialog.sheet[open] {
+    animation: none;
+  }
+}
+
 @keyframes toast-in {
   from {
     transform: translateY(12px);
@@ -327,7 +384,7 @@ dialog.sheet[open] {
     display: none !important;
   }
   body {
-    background: #fff;
+    background: var(--color-surface);
   }
   .print-plain {
     border: 0 !important;

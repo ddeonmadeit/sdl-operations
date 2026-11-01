@@ -1,12 +1,12 @@
 import "server-only";
-import { eq } from "drizzle-orm";
 import { db } from "@/db";
-import { contacts, contracts, jobs, labourBookings, quotes, stages, users, variations } from "@/db/schema";
+import { asc, eq } from "drizzle-orm";
+import { contacts, contracts, jobs, labourBookings, quotes, scopeItems, stages, users, variations } from "@/db/schema";
 import { appUrl } from "./email";
 import { addDays, fmtDate, money } from "./format";
 import { getSetting } from "./settings";
 
-export type DocKind = "quote" | "contract" | "variation" | "booking";
+export type DocKind = "quote" | "contract" | "variation" | "booking" | "stage";
 export type DocMessage = { to: string; subject: string; body: string; link?: string };
 
 const firstName = (name?: string | null) => (name ? name.trim().split(/\s+/)[0] : "there");
@@ -74,6 +74,27 @@ export async function docMessage(kind: DocKind, id: number): Promise<DocMessage 
       subject: `Variation V${row.v.number} for approval – ${row.v.title}`,
       body: `Hi ${firstName(row.client?.contactName || row.client?.name)},\n\nAs discussed, here is variation V${row.v.number} (${row.v.title}) for ${money(row.v.priceCents)} ex GST. Please review and approve it online before we proceed:\n\n${link}\n\n${signoff}`,
       link,
+    };
+  }
+
+  if (kind === "stage") {
+    const [row] = await db
+      .select({ s: stages, job: jobs, contact: contacts, sup: users })
+      .from(stages)
+      .innerJoin(jobs, eq(jobs.id, stages.jobId))
+      .leftJoin(contacts, eq(contacts.id, stages.contactId))
+      .leftJoin(users, eq(users.id, jobs.supervisorId))
+      .where(eq(stages.id, id));
+    if (!row) return null;
+    const { s } = row;
+    const scope = await db.select({ d: scopeItems.description }).from(scopeItems).where(eq(scopeItems.stageId, s.id)).orderBy(asc(scopeItems.sortOrder));
+    const when = s.startDate
+      ? `${fmtDate(s.startDate, { weekday: true, year: true })}${s.endDate && s.endDate !== s.startDate ? ` to ${fmtDate(s.endDate, { weekday: true, year: true })}` : ""}`
+      : "TBC";
+    return {
+      to: row.contact?.email ?? "",
+      subject: `${s.name} – ${row.job.siteAddress || row.job.name} – ${s.startDate ? fmtDate(s.startDate, { weekday: true }) : "dates TBC"}`,
+      body: `Hi ${firstName(row.contact?.contactName || row.contact?.name)},\n\nYou're booked in for ${s.name} with ${company.name}:\n\nSite: ${row.job.siteAddress || row.job.name}\nDates: ${when}\nSupervisor: ${row.sup?.name ?? "TBC"}${row.sup?.phone ? ` – ${row.sup.phone}` : ""}${row.job.siteInfo ? `\n\nSite info: ${row.job.siteInfo}` : ""}${scope.length ? `\n\nScope:\n${scope.map((x) => `• ${x.d}`).join("\n")}` : ""}\n\nAll workers must complete the SDL site induction before starting, and any labour hire must be booked through the SDL office. Please reply to confirm.\n\n${signoff}`,
     };
   }
 

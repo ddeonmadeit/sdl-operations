@@ -17,7 +17,7 @@ export function LoginForm({ next }: { next?: string }) {
         <span className="label">Password</span>
         <input name="password" type="password" autoComplete="current-password" required className="input" />
       </label>
-      {state?.error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{state.error}</p>}
+      {state?.error && <p className="rounded-lg bg-clay-soft px-3 py-2 text-sm text-clay-ink">{state.error}</p>}
       <button className="btn btn-primary btn-lg w-full" disabled={pending}>
         {pending && <Loader2 className="size-4 animate-spin" />} Sign in
       </button>

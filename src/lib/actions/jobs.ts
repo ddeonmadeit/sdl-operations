@@ -140,16 +140,21 @@ export async function updateStage(stageId: number, fd: FormData): Promise<Result
   const startDate = optDate(fd, "startDate");
   const endDate = optDate(fd, "endDate");
   if (startDate && endDate && endDate < startDate) return { error: "Finish date is before the start date." };
+  const [before] = await db.select().from(stages).where(eq(stages.id, stageId));
+  const contactId = int(fd, "contactId");
+  const changed = !before || before.startDate !== startDate || before.endDate !== endDate || before.contactId !== contactId;
   await db
     .update(stages)
     .set({
       name,
       kind: str(fd, "kind") === "sdl" ? "sdl" : "subcontractor",
-      contactId: int(fd, "contactId"),
+      contactId,
       startDate,
       endDate,
       budgetCents: cents(fd, "budget"),
       notes: optStr(fd, "notes"),
+      // The subbie needs telling again if their dates changed.
+      ...(changed ? { notifiedAt: null } : {}),
     })
     .where(eq(stages.id, stageId));
   refresh();

@@ -1,16 +1,17 @@
-export type Tone = "gray" | "blue" | "amber" | "green" | "red" | "violet";
+/** Status pill styles – all drawn from the four brand colours (see globals.css). */
+export type Tone = "neutral" | "info" | "warn" | "good" | "bad" | "strong";
 
 type StatusDef = { label: string; tone: Tone };
 
 export const JOB_STATUSES = {
-  enquiry: { label: "Enquiry", tone: "gray" },
-  site_visit: { label: "Site visit", tone: "blue" },
-  quoting: { label: "Quoting", tone: "violet" },
-  quoted: { label: "Quote sent", tone: "amber" },
-  won: { label: "Won – to start", tone: "green" },
-  in_progress: { label: "In progress", tone: "blue" },
-  completed: { label: "Completed", tone: "green" },
-  lost: { label: "Lost", tone: "red" },
+  enquiry: { label: "Enquiry", tone: "neutral" },
+  site_visit: { label: "Site visit", tone: "info" },
+  quoting: { label: "Quoting", tone: "info" },
+  quoted: { label: "Quote sent", tone: "warn" },
+  won: { label: "Won – to start", tone: "good" },
+  in_progress: { label: "In progress", tone: "strong" },
+  completed: { label: "Completed", tone: "good" },
+  lost: { label: "Lost", tone: "bad" },
 } satisfies Record<string, StatusDef>;
 export type JobStatus = keyof typeof JOB_STATUSES;
 export const LEAD_STATUSES: JobStatus[] = ["enquiry", "site_visit", "quoting", "quoted"];
@@ -26,48 +27,48 @@ export const PIPELINE_ORDER: JobStatus[] = [
 ];
 
 export const STAGE_STATUSES = {
-  not_started: { label: "Not started", tone: "gray" },
-  in_progress: { label: "In progress", tone: "blue" },
-  complete: { label: "Complete – check", tone: "amber" },
-  signed_off: { label: "Signed off", tone: "green" },
+  not_started: { label: "Not started", tone: "neutral" },
+  in_progress: { label: "In progress", tone: "strong" },
+  complete: { label: "Complete – check", tone: "warn" },
+  signed_off: { label: "Signed off", tone: "good" },
 } satisfies Record<string, StatusDef>;
 export type StageStatus = keyof typeof STAGE_STATUSES;
 
 export const QUOTE_STATUSES = {
-  draft: { label: "Draft", tone: "gray" },
-  sent: { label: "Sent", tone: "amber" },
-  accepted: { label: "Accepted", tone: "green" },
-  declined: { label: "Declined", tone: "red" },
+  draft: { label: "Draft", tone: "neutral" },
+  sent: { label: "Sent", tone: "warn" },
+  accepted: { label: "Accepted", tone: "good" },
+  declined: { label: "Declined", tone: "bad" },
 } satisfies Record<string, StatusDef>;
 
 export const CONTRACT_STATUSES = {
-  draft: { label: "Draft", tone: "gray" },
-  sent: { label: "Sent", tone: "amber" },
-  signed: { label: "Signed", tone: "green" },
-  cancelled: { label: "Cancelled", tone: "red" },
+  draft: { label: "Draft", tone: "neutral" },
+  sent: { label: "Sent", tone: "warn" },
+  signed: { label: "Signed", tone: "good" },
+  cancelled: { label: "Cancelled", tone: "bad" },
 } satisfies Record<string, StatusDef>;
 
 export const VARIATION_STATUSES = {
-  identified: { label: "Identified", tone: "violet" },
-  priced: { label: "Priced", tone: "blue" },
-  submitted: { label: "With client", tone: "amber" },
-  approved: { label: "Approved", tone: "green" },
-  declined: { label: "Declined", tone: "red" },
-  invoiced: { label: "Invoiced", tone: "gray" },
+  identified: { label: "Identified", tone: "warn" },
+  priced: { label: "Priced", tone: "info" },
+  submitted: { label: "With client", tone: "strong" },
+  approved: { label: "Approved", tone: "good" },
+  declined: { label: "Declined", tone: "bad" },
+  invoiced: { label: "Invoiced", tone: "neutral" },
 } satisfies Record<string, StatusDef>;
 export type VariationStatus = keyof typeof VARIATION_STATUSES;
 
 export const BOOKING_STATUSES = {
-  requested: { label: "Requested", tone: "amber" },
-  booked: { label: "Booked", tone: "green" },
-  cancelled: { label: "Cancelled", tone: "red" },
+  requested: { label: "Requested", tone: "warn" },
+  booked: { label: "Booked", tone: "good" },
+  cancelled: { label: "Cancelled", tone: "bad" },
 } satisfies Record<string, StatusDef>;
 
 export const BILL_STATUSES = {
-  pending: { label: "To check", tone: "amber" },
-  approved: { label: "Approved", tone: "green" },
-  rejected: { label: "Rejected", tone: "red" },
-  paid: { label: "Paid", tone: "gray" },
+  pending: { label: "To check", tone: "warn" },
+  approved: { label: "Approved", tone: "good" },
+  rejected: { label: "Rejected", tone: "bad" },
+  paid: { label: "Paid", tone: "neutral" },
 } satisfies Record<string, StatusDef>;
 
 export const BILL_KINDS = {
@@ -86,11 +87,11 @@ export const CONTACT_TYPES = {
 export type ContactType = keyof typeof CONTACT_TYPES;
 
 export const ENTRY_TYPES = {
-  note: { label: "Note", tone: "gray" },
-  client: { label: "Client conversation", tone: "blue" },
-  issue: { label: "Problem / issue", tone: "red" },
-  unforeseen: { label: "Unforeseen item", tone: "amber" },
-  photo: { label: "Photos", tone: "gray" },
+  note: { label: "Note", tone: "neutral" },
+  client: { label: "Client conversation", tone: "info" },
+  issue: { label: "Problem / issue", tone: "bad" },
+  unforeseen: { label: "Unforeseen item", tone: "warn" },
+  photo: { label: "Photos", tone: "neutral" },
 } satisfies Record<string, StatusDef>;
 export type EntryType = keyof typeof ENTRY_TYPES;
 
@@ -128,3 +129,11 @@ export const STAGE_TEMPLATE: { name: string; kind: "sdl" | "subcontractor"; trad
 ];
 
 export const JOB_SOURCES = ["Website", "Referral", "Repeat client", "Social media", "Builder", "Signage", "Other"];
+
+/** Timeline bar colours per stage state – brand colours only. */
+export function stageBarClass(status: string, kind: string) {
+  if (status === "signed_off") return "bg-leaf text-cream";
+  if (status === "complete") return "bg-clay text-cream";
+  if (status === "in_progress") return "bg-olive text-cream";
+  return kind === "sdl" ? "bg-leaf-mid text-olive" : "bg-line-strong text-olive";
+}

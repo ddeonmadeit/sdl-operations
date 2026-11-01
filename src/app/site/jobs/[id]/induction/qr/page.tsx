@@ -13,7 +13,7 @@ export default async function InductionQr({ params }: { params: Promise<{ id: st
   const { id } = await params;
   const job = await getJob(Number(id));
   const link = `${appUrl()}/induct/${job.inductionToken}`;
-  const svg = await QRCode.toString(link, { type: "svg", margin: 1, width: 320, color: { dark: "#18211c", light: "#ffffff" } });
+  const svg = await QRCode.toString(link, { type: "svg", margin: 1, width: 320, color: { dark: "#404232", light: "#f4f0eb" } });
   return (
     <>
       <SiteHeader back={`/site/jobs/${job.id}/induction`} title="Scan to sign in" sub={job.siteAddress ?? job.name} />

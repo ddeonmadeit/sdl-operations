@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { AlertTriangle, Camera, ClipboardList, HardHat, MessageSquare, Pencil, StickyNote, Trash2 } from "lucide-react";
+import { AlertTriangle, ArrowUpRight, Camera, ClipboardList, HardHat, MessageSquare, Pencil, StickyNote, Trash2 } from "lucide-react";
 import { createTask, deleteTask, toggleTask, updateTask } from "@/lib/actions/tasks";
 import { ENTRY_TYPES } from "@/lib/constants";
 import { fmtDateTime, relDay, timeAgo, today } from "@/lib/format";
@@ -134,15 +134,15 @@ export function TaskList({
                       {t.assigneeId === currentUserId ? "Me" : t.assigneeName}
                     </span>
                   )}
-                  {t.dueDate && <span className={cx(overdue && "font-semibold text-red-700")}>{overdue ? "Overdue · " : "Due "}{relDay(t.dueDate)}</span>}
+                  {t.dueDate && <span className={cx(overdue && "font-semibold text-clay")}>{overdue ? "Overdue · " : "Due "}{relDay(t.dueDate)}</span>}
                   {showJob && t.jobName && <span className="truncate">· {t.jobName}</span>}
                 </span>
               </CheckRow>
             </div>
             <div className="flex shrink-0 items-center gap-1 py-2.5 pr-2">
               {showJob && t.jobId && (
-                <Link href={jobHref(t.jobId)} className="btn btn-ghost btn-sm hidden sm:inline-flex">
-                  Job
+                <Link href={jobHref(t.jobId)} className="btn btn-ghost btn-icon btn-sm" title="Open job" aria-label="Open job">
+                  <ArrowUpRight className="size-4" />
                 </Link>
               )}
               <Modal title="Edit task" trigger={<Pencil className="size-4" />} triggerClassName="btn btn-ghost btn-icon btn-sm" triggerTitle="Edit task">
